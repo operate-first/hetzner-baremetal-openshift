@@ -138,12 +138,3 @@ curl -L -O https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/
 ```
 
 
-
-
- ip link add link enp0s31f6 name enp0s31f6.4000 type vlan id 4000
- ip link set enp0s31f6.4000 mtu 1400
- ip link set dev enp0s31f6.4000 up
-SET IP ADDRESS AND ROUTE
- ip addr add 172.22.2.2/24 dev enp0s31f6.4000
- ip route add 172.22.0.0/16 via 172.22.2.1
-
