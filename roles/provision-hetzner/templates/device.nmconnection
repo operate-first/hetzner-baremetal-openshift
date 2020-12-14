@@ -1,0 +1,20 @@
+[connection]
+id={{ network_primary_interface }}
+interface-name={{ network_primary_interface }}
+type=802-3-ethernet
+autoconnect=true
+
+[ethernet]
+mac-address-blacklist=
+
+[ipv4]
+address1={{ hetzner_ip }}/{{ network_mask }}
+dns-search=
+method=manual
+gateway={{ network_gateway }}
+dns={{ network_dns }}
+
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=auto

@@ -1,0 +1,20 @@
+[all:vars]
+# ansible_ssh_private_key_file=xxxx
+ansible_user=root
+
+hetzner_webservice_username="XXXX"
+hetzner_webservice_password="XXXX"
+
+
+
+[nodes:vars]
+install_device=/dev/nvme0n1
+network_dns=172.22.1.10
+network_vlanid=4000
+network_primary_interface=enp0s31f6
+network_mask=26
+
+[nodes]
+host02.openshift.pub internal_hostname=master-0.compute.local internal_ip=172.22.2.11 hetzner_ip=88.99.58.72     network_gateway=88.99.58.65
+host03.openshift.pub internal_hostname=master-1.compute.local internal_ip=172.22.2.12 hetzner_ip=136.243.47.165  network_gateway=136.243.47.129
+host04.openshift.pub internal_hostname=master-2.compute.local internal_ip=172.22.2.13 hetzner_ip=88.99.143.102   network_gateway=88.99.143.65

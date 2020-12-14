@@ -17,7 +17,7 @@
       {
         "path": "/etc/hostname",
         "contents": {
-          "source": "data:,openshit-host"
+          "source": "data:,{{ internal_hostname }}"
         },
         "mode": 420
       }

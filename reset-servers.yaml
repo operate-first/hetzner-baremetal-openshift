@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes
+  gather_facts: true
+  roles:
+    - provision-hetzner
+
