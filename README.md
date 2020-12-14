@@ -50,13 +50,13 @@ TimeoutStartSec=5m
 ExecStartPre=-/usr/bin/podman rm "openshift-4-loadbalancer"
 ExecStartPre=/usr/bin/podman pull quay.io/redhat-emea-ssa-team/openshift-4-loadbalancer
 ExecStart=/usr/bin/podman run --name openshift-4-loadbalancer --net host \
-  -e API=bootstrap=172.22.2.99:6443,master-0=172.22.2.3:6443,master-1=172.22.2.4:6443,master-3=172.22.2.5:6443 \
+  -e API=bootstrap=172.22.1.6:6443,master-0=172.22.2.3:6443,master-1=172.22.2.4:6443,master-3=172.22.2.5:6443 \
   -e API_LISTEN=78.46.236.55:6443,172.22.1.10:6443 \
   -e INGRESS_HTTP=master-0=172.22.2.3:80,master-1=172.22.2.4:80,master-3=172.22.2.5:80 \
   -e INGRESS_HTTP_LISTEN=78.46.236.55:80,172.22.1.10:80 \
   -e INGRESS_HTTPS=master-0=172.22.2.3:443,master-1=172.22.2.4:443,master-3=172.22.2.5:443 \
   -e INGRESS_HTTPS_LISTEN=78.46.236.55:443,172.22.1.10:443 \
-  -e MACHINE_CONFIG_SERVER=bootstrap=172.22.2.99:22623,master-0=172.22.2.3:22623,master-1=172.22.2.4:22623,master-3=172.22.2.5:22623 \
+  -e MACHINE_CONFIG_SERVER=bootstrap=172.22.1.6:22623,master-0=172.22.2.3:22623,master-1=172.22.2.4:22623,master-3=172.22.2.5:22623 \
   -e MACHINE_CONFIG_SERVER_LISTEN=172.22.1.10:22623 \
   -e STATS_LISTEN=127.0.0.1:1984 \
   -e STATS_ADMIN_PASSWORD=aengeo4oodoidaiP \
@@ -114,6 +114,7 @@ Add to `/etc/hosts`
 172.22.2.3 master-0.compute.local
 172.22.2.4 master-1.compute.local
 172.22.2.5 master-3.compute.local
+172.22.2.6 bootstrap.compute.local
 ```
 
 
