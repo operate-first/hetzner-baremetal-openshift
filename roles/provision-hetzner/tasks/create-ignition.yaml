@@ -39,9 +39,9 @@
 
 - name: Fetch master ignition
   set_fact:
-    master_json: "{{ lookup('file',  openshift_install_dir ~ '/master.ign')}}"
+    source_ignition: "{{ lookup('file',  openshift_install_dir ~ '/' ~ ignition_name )}}"
 
 - name: Create ignition
   copy:
-    content: "{{ master_json | combine( storage_json ) }}"
+    content: "{{ source_ignition | combine( storage_json ) }}"
     dest: /root/config.ignition

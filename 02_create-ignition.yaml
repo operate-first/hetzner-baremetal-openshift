@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- hosts: nodes
+- hosts: nodes,bootstrap
   tasks:
     - include_role:
         name: provision-hetzner
