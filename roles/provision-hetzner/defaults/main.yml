@@ -9,7 +9,8 @@ coreos_install_url: "https://mirror.openshift.com/pub/openshift-v4/clients/coreo
 coreos_image_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.1/rhcos-4.6.1-x86_64-metal.x86_64.raw.gz"
 
 
-
+openshift_install_dir: "{{ playbook_dir }}/config/"
+openshift_install_command: "openshift-install"
 # hetzner_webservice_username:
 # hetzner_webservice_password:
 # hetzner_hostname: "hostname.example.com"

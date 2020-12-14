@@ -16,13 +16,16 @@
     - "{{ coreos_image_url }}"
 
 
-- name: Download artifacts
+- name: Download RCOS
   get_url:
-    url: "{{ item }}"
-    dest: "/root/{{ item | basename }}"
-  with_items:
-    - "{{ coreos_install_url }}"
-    - "{{ coreos_image_url }}"
+    url: "{{ coreos_image_url }}"
+    dest: "/root/{{ coreos_image_url | basename }}"
+
+- name: Download coreos-installer
+  get_url:
+    url: "{{ coreos_install_url }}"
+    dest: "/root/{{ coreos_install_url | basename }}"
+    mode: a+x
 
 - name: Create network config folder
   ansible.builtin.file:

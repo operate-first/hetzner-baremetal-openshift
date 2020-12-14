@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes
+  tasks:
+    - include_role:
+        name: provision-hetzner
+        tasks_from: create-ignition.yaml
