@@ -1,0 +1,204 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  # gather_facts true because we need the public ip address
+  gather_facts: false
+  tags:
+    - vm
+  vars:
+    centos_download_url: https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2
+    centos_image_location: /var/lib/libvirt/images/CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2
+    # centos_download_url: https://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2
+    # centos_image_location: /var/lib/libvirt/images/CentOS-7-x86_64-GenericCloud.qcow2
+
+
+  tasks:
+  - name: Download Centos image
+    command:
+      "curl --compressed -J -L -o {{ centos_image_location }} {{ centos_download_url }}"
+    args:
+      creates: "{{ centos_image_location }}"
+      warn: false
+
+  # - name: Install cloud-utils
+  #   package:
+  #     name: cloud-utils
+
+
+  - name: Build inventory
+    add_host:
+      hostname: "boostrap"
+      ansible_ssh_host: "172.22.2.10"
+      ansible_ssh_user: core
+      ansible_python_interpreter: /usr/libexec/platform-python
+      vm_instance_name: "boostrap"
+      ssh_public_key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      vn_subnet: "172.22.2.0/24"
+      vm_ip_address: "172.22.2.99"
+      centos_image_location: "{{ centos_image_location }}"
+      vm_root_disk_size: 120g
+      vm_vcpu: 4
+      vm_memory_size: 8096
+      vm_memory_unit: 'MiB'
+      groups:
+        - boostrap
+
+- hosts: boostrap
+  gather_facts: false
+  become: true
+  tasks:
+  #########################################################################################################
+  # Spinup instances
+  #########################################################################################################
+  - name: Spinn up instances
+    connection: local
+    block:
+    - name: Create disk for {{ vm_instance_name }}
+      # command: "qemu-img create -f qcow2 -b {{ centos_image_location }} /var/lib/libvirt/images/{{ vm_instance_name }}.qcow2 {{ vm_root_disk_size }}"
+      command: "qemu-img create -f qcow2 /var/lib/libvirt/images/{{ vm_instance_name }}.qcow2 {{ vm_root_disk_size }}"
+      args:
+        creates: "/var/lib/libvirt/images/{{ vm_instance_name }}.qcow2"
+
+    # - name: Create cloud-init meta-data
+    #   copy:
+    #     dest: "/var/lib/libvirt/images/meta-data"
+    #     content: |
+    #       instance-id: {{ lookup('lines','uuidgen') }}
+    #       local-hostname: {{ vm_instance_name }}
+
+    #       network-interfaces: |
+    #         auto eth1
+    #         iface eth1 inet static
+    #         address {{ vm_ip_address }}
+    #         network {{ vn_subnet }}
+    #         netmask 255.255.255.0
+    #         broadcast {{ vn_subnet.split('.')[:3] | join('.')}}.255
+    #         gateway {{ vn_subnet.split('.')[:3] | join('.')}}.2
+    #         dns-nameserver {{ vn_subnet.split('.')[:3] | join('.')}}.2
+
+    #         auto eth0
+    #         iface eth0 inet dhcp
+
+
+    # # Root pw r3dh4t1!
+    # - name: Create cloud-init user-data
+    #   copy:
+    #     dest: "/var/lib/libvirt/images/user-data"
+    #     content: |
+    #       #cloud-config
+
+    #       ssh_authorized_keys:
+    #       - {{ ssh_public_key }}
+
+    #       hostname: {{ vm_instance_name }}
+    #       fqdn: {{ vm_instance_name }}
+    #       # set the locale
+    #       locale: en_US.UTF-8
+
+    #       # timezone: set the timezone for this instance
+    #       timezone: UTC
+
+    #       users:
+    #       - name: root
+    #         lock-passwd: false
+    #         passwd: $6$d4liyFglopH9LjL2$juw04vOTPk4JUS2rvaZQpQNu2QqyNyPwVLzQ/9F08qZlRa0vcvKseuULW5oMW0tA7whSGEO5Y6BqEFR6ULlgD0
+    #       - name: core
+    #         sudo: ALL=(ALL) NOPASSWD:ALL
+    #         ssh_authorized_keys:
+    #           - {{ ssh_public_key }}
+    #         lock_passwd: false
+    #         passwd: $6$d4liyFglopH9LjL2$juw04vOTPk4JUS2rvaZQpQNu2QqyNyPwVLzQ/9F08qZlRa0vcvKseuULW5oMW0tA7whSGEO5Y6BqEFR6ULlgD0
+
+
+    # #  genisoimage -output /var/lib/libvirt/images/cloud-init.iso -volid cidata -joliet -rock user-data meta-data network-config
+    # - name: Create CD-ROM ISO with cloud-init config
+    #   shell: |
+    #     genisoimage -output  /var/lib/libvirt/images/{{ vm_instance_name }}-cloud-init.iso \
+    #     -volid cidata -joliet -rock \
+    #       /var/lib/libvirt/images/user-data \
+    #       /var/lib/libvirt/images/meta-data &&
+    #     chown qemu:wheel /var/lib/libvirt/images/{{ vm_instance_name }}-cloud-init.iso
+    #   args:
+    #     creates: "/var/lib/libvirt/images/{{ vm_instance_name }}-cloud-init.iso"
+
+    - name: Define VirtualMachine {{ vm_instance_name }}
+      virt:
+        name: "{{ vm_instance_name }}"
+        command: define
+        xml: |
+          <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+            <name>{{ vm_instance_name }}</name>
+            <uuid>{{ lookup('lines','uuidgen') }}</uuid>
+            <memory unit='{{ vm_memory_unit }}'>{{ vm_memory_size }}</memory>
+            <currentMemory unit='{{ vm_memory_unit }}'>{{ vm_memory_size }}</currentMemory>
+            <vcpu>{{ vm_vcpu }}</vcpu>
+            <os>
+              <type arch="x86_64">hvm</type>
+              <boot dev="cdrom" />
+              <boot dev="hd"/>
+            </os>
+            <sysinfo type="smbios">
+            </sysinfo>
+            <features>
+              <acpi/>
+              <apic/>
+              <pae/>
+            </features>
+            <clock offset="utc">
+              <timer name="rtc" tickpolicy="catchup"/>
+              <timer name="pit" tickpolicy="delay"/>
+              <timer name="hpet" present="no"/>
+            </clock>
+            <pm>
+              <suspend-to-mem enabled="no"/>
+              <suspend-to-disk enabled="no"/>
+            </pm>
+            <devices>
+              <emulator>/usr/libexec/qemu-kvm</emulator>
+              <disk type='file' device='disk'>
+                <driver name='qemu' type='qcow2'/>
+                <source file='/var/lib/libvirt/images/{{ vm_instance_name }}.qcow2'/>
+                <target dev='vda' bus='virtio'/>
+              </disk>
+              <disk type='file' device='cdrom'>
+                <driver name='qemu' type='raw'/>
+                <source file='/var/lib/libvirt/images/rhcos-4.6.1-x86_64-live.x86_64.iso'/>
+                <target dev='hdb' bus='ide'/>
+                <readonly/>
+                <alias name='ide0-1-0'/>
+                <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+              </disk>
+              <controller type="usb" index="0" model="ich9-ehci1"/>
+              <controller type="usb" index="0" model="ich9-uhci1">
+                <master startport="0"/>
+              </controller>
+              <controller type="usb" index="0" model="ich9-uhci2">
+                <master startport="2"/>
+              </controller>
+              <controller type="usb" index="0" model="ich9-uhci3">
+                <master startport="4"/>
+              </controller>
+              <interface type='direct'>
+                <source dev='enp4s0.4000' mode='vepa'/>
+              </interface>
+              <interface type='network'>
+                <source network='demo'/>
+                <model type='virtio'/>
+              </interface>
+              <graphics type="vnc" port="-1"/>
+              <console type="pty"/>
+              <rng model="virtio">
+                <backend model="random">/dev/urandom</backend>
+              </rng>
+            </devices>
+            <qemu:commandline>
+              <qemu:arg value="-smbios"/>
+              <qemu:arg value="type=1,serial=ds=nocloud"/>
+            </qemu:commandline>
+          </domain>
+
+    - name: Start VirtualMachine {{ vm_instance_name }}
+      virt:
+        name: "{{ vm_instance_name }}"
+        state: running

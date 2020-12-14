@@ -1,0 +1,35 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  # gather_facts true because we need the public ip address
+  gather_facts: false
+  tasks:
+
+  # ToDo later, loop
+
+  - set_fact:
+      vm_instance_name: "bootsrap"
+
+  - name: Destroy VM {{ vm_instance_name }}
+    virt:
+      command: destroy
+      name: "{{ vm_instance_name }}"
+    ignore_errors: yes
+
+  - name: Undefine VM {{ vm_instance_name }}
+    virt:
+      command: undefine
+      name: "{{ vm_instance_name }}"
+    ignore_errors: yes
+
+  - name: Delete files of {{ vm_instance_name }}
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "/var/lib/libvirt/images/{{ vm_instance_name }}.qcow2"
+      - "/var/lib/libvirt/images/user-data"
+      - "/var/lib/libvirt/images/meta-data"
+      - "/var/lib/libvirt/images/{{ vm_instance_name }}-cloud-init.iso"
+
