@@ -31,6 +31,31 @@ nameserver 213.133.98.98
 ```
 #### Connect network with vSwitch
 
+#### Setup Proxy server
+
+**Why proxy setup?**
+Because of openshift installation use interfaces with a default gateway for main interface decision. We changed the default gw to 172.22.2.1 at vlan4000 interface to force to use the VLAN interface IP.
+
+Additional we decided to complete disable public IP because bootstrap pick the first IP and this is the public one so bootstrap etcd member uses public API but all other nodes do not have access anymore to public IPs.
+
+```
+dnf -y install tinyproxy
+```
+
+Add to `/etc/tinyproxy/tinyproxy.conf` :
+
+```
+Listen 172.22.1.10
+Allow 172.22.0.0/16
+```
+
+Start
+```
+systemctl enable --now tinyproxy
+systemctl status tinyproxy
+
+```
+
 #### Setup Load Balancer
 
 ```

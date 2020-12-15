@@ -18,8 +18,10 @@ parent={{ network_primary_interface }}
 [ipv4]
 address1={{ internal_ip }}/24
 dns-search=
+dns={{ network_dns }}
 method=manual
-route1=172.22.0.0/16,172.22.2.1
+gateway=172.22.2.1
+# route1=172.22.0.0/16,172.22.2.1
 
 [ipv6]
 addr-gen-mode=stable-privacy

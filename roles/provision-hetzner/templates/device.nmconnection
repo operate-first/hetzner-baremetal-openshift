@@ -8,11 +8,13 @@ autoconnect=true
 mac-address-blacklist=
 
 [ipv4]
-address1={{ hetzner_ip }}/{{ network_mask }}
 dns-search=
-method=manual
-gateway={{ network_gateway }}
-dns={{ network_dns }}
+method=disabled
+
+# address1={{ hetzner_ip }}/{{ network_mask }}
+# method=manual
+# gateway={{ network_gateway }}
+# dns={{ network_dns }}
 
 [ipv6]
 addr-gen-mode=stable-privacy
