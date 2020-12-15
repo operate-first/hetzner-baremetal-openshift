@@ -15,6 +15,6 @@
     var: installer
 
 - name: Reboot
-  shell: reboot --reboot
+  reboot:
   tags:
     reboot
