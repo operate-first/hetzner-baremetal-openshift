@@ -33,7 +33,7 @@
     body:
       os: linux
       arch: 64
-      authorized_key: "{{ key.json | community.general.json_query('[*].key.fingerprint') }}"
+      authorized_key: "{{ key.json | json_query('[*].key.fingerprint') }}"
     status_code: 200
   register: activated
   delegate_to: localhost

@@ -23,25 +23,28 @@
     args:
       creates: "{{ openshift_install_dir}}/.openshift_install_state.json"
 
-
-- name: Configure storage part
-  set_fact:
-    storage_json: |
-      { "storage": {"files": [
-        {
-          "path": "/etc/hostname",
-          "contents": {
-            "source": "data:,{{ internal_hostname }}"
-          },
-          "mode": 420
-        }
-      ]}}
-
 - name: Fetch master ignition
   set_fact:
     source_ignition: "{{ lookup('file',  openshift_install_dir ~ '/' ~ ignition_name )}}"
 
+- name: Build storage.files
+  set_fact:
+    files: "{{ source_ignition.storage.files | default([]) + [
+        {
+          'path': '/etc/hostname',
+          'contents': {
+            'source': 'data:,' ~ internal_hostname
+          },
+          'mode': 420
+        }
+    ] }}"
+
+
+- name: Build storage part
+  set_fact:
+    storage: "{ 'storage': {'files': {{files}} } }"
+
 - name: Create ignition
   copy:
-    content: "{{ source_ignition | combine( storage_json ) }}"
+    content: "{{ source_ignition | combine( storage ) }}"
     dest: /root/config.ignition
