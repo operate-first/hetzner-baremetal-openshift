@@ -38,6 +38,13 @@ Because of openshift installation use interfaces with a default gateway for main
 
 Additional we decided to complete disable public IP because bootstrap pick the first IP and this is the public one so bootstrap etcd member uses public API but all other nodes do not have access anymore to public IPs.
 
+On the nodes the server nodeip-configuration.service takes care of the kubelet IP:
+```
+systemctl status nodeip-configuration.service
+systemctl cat nodeip-configuration.service
+```
+
+
 ```
 dnf -y install tinyproxy
 ```
