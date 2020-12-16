@@ -1,4 +1,9 @@
 # OpenShift 4 on Hetzner BareMetal (dedicted server)
+## Current status
+
+**Installation starts master nodes try to join sometimes fails, etcd did not start on master nodes. Sadly I had nor more time and budget to work further.**
+
+
 
 ## Network Overview
 
