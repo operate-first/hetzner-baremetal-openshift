@@ -1,3 +1,4 @@
+# https://developer.gnome.org/NetworkManager/stable/nm-settings-keyfile.html
 [connection]
 id={{ network_primary_interface }}
 interface-name={{ network_primary_interface }}
@@ -9,12 +10,11 @@ mac-address-blacklist=
 
 [ipv4]
 dns-search=
-method=disabled
-
-# address1={{ hetzner_ip }}/{{ network_mask }}
-# method=manual
-# gateway={{ network_gateway }}
-# dns={{ network_dns }}
+method=manual
+address1={{ hetzner_ip }}/{{ network_mask }}
+method=manual
+gateway={{ network_gateway }}
+dns={{ network_dns }}
 
 [ipv6]
 addr-gen-mode=stable-privacy
