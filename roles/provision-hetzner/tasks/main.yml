@@ -19,7 +19,7 @@
 - name: Download RCOS
   get_url:
     url: "{{ coreos_image_url }}"
-    dest: "/root/{{ coreos_image_url | basename }}"
+    dest: "{{ coreos_image }}"
 
 - name: Download coreos-installer
   get_url:
@@ -60,7 +60,7 @@
   debug:
     msg:
       - "Please run:"
-      - "./coreos-installer install {{ install_device }} --ignition-file ssh-only.ignition --copy-network --firstboot-args='rd.neednet=1' --network-dir ./network-config/ --insecure --image-file rhcos-4.6.1-x86_64-metal.x86_64.raw.gz"
+      - "./coreos-installer install {{ install_device }} --ignition-file ssh-only.ignition --copy-network --firstboot-args='rd.neednet=1' --network-dir ./network-config/ --insecure --image-file {{ coreos_image }}"
 
 # - name: Copy autosetup configuration file
 #   template:

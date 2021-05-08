@@ -7,7 +7,7 @@ hetzner_image_ignore_errors: false
 
 coreos_install_url: "https://mirror.openshift.com/pub/openshift-v4/clients/coreos-installer/v0.8.0-3/coreos-installer"
 coreos_image_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz"
-
+coreos_image: /root/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz
 
 openshift_install_dir: "{{ playbook_dir }}/config/"
 openshift_install_command: "openshift-install"
