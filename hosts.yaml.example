@@ -1,0 +1,63 @@
+---
+# Network device name:
+# 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection (2) I219-LM (rev 31)
+# - Intel I219-LM => enp0s31f6
+all:
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/operate-first
+    ansible_user: root
+
+    hetzner_webservice_username: "xxxx"
+    hetzner_webservice_password: "xxxx"
+
+    image_pull_secret: '{xxx}'
+    ssh_public_key: "xxx"
+
+    base_domain: example.com
+    cluster_name: ocp1
+nodes:
+  vars:
+    install_device: /dev/sda
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+
+    network_vlanid: 4000
+    network_primary_interface: enp0s31f6
+    network_mask: 26
+    ignition_name: master.ign
+
+  hosts:
+    host01.example.com:
+      internal_hostname: host01.example.com
+      internal_ip: 172.22.2.3
+      hetzner_ip: 1.1.1.35
+      network_gateway: 1.1.1.1
+    host02.example.com:
+      internal_hostname: host02.example.com
+      internal_ip: 172.22.2.4
+      hetzner_ip: 2.2.2.2.217
+      network_gateway: 2.2.2.2.193
+    host03.example.com:
+      network_primary_interface: enp3s0
+      internal_hostname: host03.example.com
+      internal_ip: 172.22.2.5
+      hetzner_ip: 3.3.3.3.105
+      network_gateway: 3.3.3.3.65
+
+
+bootstrap:
+  vars:
+    install_device: /dev/sda
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+    network_vlanid: 4000
+    network_primary_interface: enp0s31f6
+    network_mask: 26
+    ignition_name: bootstrap.ign
+  hosts:
+    host04.example.com:
+      internal_hostname: host04.example.com
+      internal_ip: 172.22.2.6
+      hetzner_ip: 4.4.4.4.215
+      network_gateway: 4.4.4.4.193
+
+
+

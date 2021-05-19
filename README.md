@@ -1,13 +1,31 @@
 # OpenShift 4 on Hetzner BareMetal (dedicted server)
-## Current status
-
-**Installation starts master nodes try to join sometimes fails, etcd did not start on master nodes. Sadly I had nor more time and budget to work further.**
-
-
 
 ## Network Overview
 
-![Network overview](docs/network-overview-v2.png)
+![Network overview](docs/network-overview-v3.png)
+
+
+## Issues to solve
+
+### prodect machine config server (22623)
+
+Currently :22623 is public available, it should be only available for nodes.
+
+
+Tcpdump on host01
+```
+19:56:48.618128 IP 49.12.23.25.26634 > 94.130.55.35.22623: Flags [S], seq 1010699155, win 64240, options [mss 1460,sackOK,TS val 1548548017 ecr 0,nop,wscale 7], length 0
+19:56:48.618187 IP 94.130.55.35.22623 > 49.12.23.25.26634: Flags [S.], seq 1554818295, ack 1010699156, win 28960, options [mss 1460,sackOK,TS val 2776963539 ecr 1548548017,nop,wscale 7], length 0
+19:56:48.618432 IP 49.12.23.25.26634 > 94.130.55.35.22623: Flags [.], ack 1, win 502, options [nop,nop,TS val 1548548018 ecr 2776963539], length 0
+19:56:48.640778 IP 49.12.23.25.26634 > 94.130.55.35.22623: Flags [P.], seq 1:518, ack 1, win 502, options [nop,nop,TS val 1548548040 ecr 2776963539], length 517
+19:56:48.640789 IP 94.130.55.35.22623 > 49.12.23.25.26634: Flags [.], ack 518, win 235, options [nop,nop,TS val 2776963561 ecr 1548548040], length 0
+19:56:48.642483 IP 94.130.55.35.22623 > 49.12.23.25.26634: Flags [P.], seq 1:1578, ack 518, win 235, options [nop,nop,TS val 2776963563 ecr 1548548040], length 1577
+19:
+```
+Source Adress is the address of the load balancer :-(
+
+
+
 
 ## High level steps
 
