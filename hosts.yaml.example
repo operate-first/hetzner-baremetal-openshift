@@ -15,6 +15,11 @@ all:
 
     base_domain: example.com
     cluster_name: ocp1
+
+    gcp_managed_zone_name: example-com
+    gcp_managed_zone_domain: example.com.
+    gcp_project: example-com
+    gcp_serviceaccount_file: example-asdf.json
 nodes:
   vars:
     install_device: /dev/sda
