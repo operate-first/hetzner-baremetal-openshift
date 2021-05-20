@@ -6,4 +6,3 @@
     - include_role:
         name: provision-hetzner
         tasks_from: boot-rescue.yaml
-

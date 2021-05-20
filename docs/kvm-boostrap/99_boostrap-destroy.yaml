@@ -32,4 +32,3 @@
       - "/var/lib/libvirt/images/user-data"
       - "/var/lib/libvirt/images/meta-data"
       - "/var/lib/libvirt/images/{{ vm_instance_name }}-cloud-init.iso"
-

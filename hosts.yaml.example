@@ -63,6 +63,3 @@ bootstrap:
       internal_ip: 172.22.2.6
       hetzner_ip: 4.4.4.4.215
       network_gateway: 4.4.4.4.193
-
-
-

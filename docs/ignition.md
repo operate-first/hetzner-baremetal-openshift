@@ -59,4 +59,3 @@ Copying networking configuration from ./network-config/
 Copying ./network-config/vlan4000.nmconnection to installed system
 Copying ./network-config/enp4s0.nmconnection to installed system
 Install complete.
-

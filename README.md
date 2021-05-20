@@ -192,5 +192,3 @@ curl -L -O https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/
   --insecure \
   --image-file rhcos-4.6.1-x86_64-metal.x86_64.raw.gz
 ```
-
-

@@ -4,4 +4,3 @@
   gather_facts: true
   roles:
     - provision-hetzner
-

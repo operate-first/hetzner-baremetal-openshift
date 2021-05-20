@@ -14,4 +14,3 @@ openshift_install_command: "openshift-install"
 # hetzner_webservice_username:
 # hetzner_webservice_password:
 # hetzner_hostname: "hostname.example.com"
-

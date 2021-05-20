@@ -7,7 +7,6 @@
   roles:
     - hcloud
 
-
 - name: Basis installation
   hosts: lb
   gather_facts: yes
@@ -23,72 +22,70 @@
     - name: Configure haproxy
       copy:
         backup: yes
-        dest:  /etc/haproxy/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg
         content: |
-              global
-                  log         127.0.0.1 local2
+          global
+              log         127.0.0.1 local2
 
-                  chroot      /var/lib/haproxy
-                  pidfile     /var/run/haproxy.pid
-                  maxconn     4000
-                  user        haproxy
-                  group       haproxy
+              chroot      /var/lib/haproxy
+              pidfile     /var/run/haproxy.pid
+              maxconn     4000
+              user        haproxy
+              group       haproxy
 
-                  # turn on stats unix socket
-                  stats socket /var/lib/haproxy/stats
-
-
+              # turn on stats unix socket
+              stats socket /var/lib/haproxy/stats
 
 
-              #---------------------------------------------------------------------
-              # common defaults that all the 'listen' and 'backend' sections will
-              # use if not designated in their block
-              #---------------------------------------------------------------------
+          #---------------------------------------------------------------------
+          # common defaults that all the 'listen' and 'backend' sections will
+          # use if not designated in their block
+          #---------------------------------------------------------------------
 
-              defaults
-                  mode                    http
-                  log                     global
-                  #option                  httplog
-                  option                  dontlognull
-                  #option http-server-close
-                  #option forwardfor       except 127.0.0.0/8
-                  option                  redispatch
-                  retries                 3
-                  timeout http-request    10s
-                  timeout queue           1m
-                  timeout connect         10s
-                  timeout client          1m
-                  timeout server          1m
-                  timeout http-keep-alive 10s
-                  timeout check           10s
-                  maxconn                 3000
+          defaults
+              mode                    http
+              log                     global
+              #option                  httplog
+              option                  dontlognull
+              #option http-server-close
+              #option forwardfor       except 127.0.0.0/8
+              option                  redispatch
+              retries                 3
+              timeout http-request    10s
+              timeout queue           1m
+              timeout connect         10s
+              timeout client          1m
+              timeout server          1m
+              timeout http-keep-alive 10s
+              timeout check           10s
+              maxconn                 3000
 
-              listen machine-config-server
-                  bind :22623
-                  mode tcp
+          listen machine-config-server
+              bind :22623
+              mode tcp
 
-                  {% for host in groups['nodes'] -%}
-                  server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
-                  {% endfor -%}
+              {% for host in groups['nodes'] -%}
+              server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
+              {% endfor -%}
 
-                  {% for host in groups['bootstrap'] -%}
-                  server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
-                  {% endfor -%}
-              listen api
-                  bind :6443
-                  mode tcp
+              {% for host in groups['bootstrap'] -%}
+              server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
+              {% endfor -%}
+          listen api
+              bind :6443
+              mode tcp
 
-                  {% for host in groups['nodes'] -%}
-                  server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
-                  {% endfor -%}
+              {% for host in groups['nodes'] -%}
+              server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
+              {% endfor -%}
 
-                  {% for host in groups['bootstrap'] -%}
-                  server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
-                  {% endfor -%}
+              {% for host in groups['bootstrap'] -%}
+              server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
+              {% endfor -%}
 
     - name: enable haproxy
       systemd:
-          name: haproxy
-          enabled: yes
-          masked: no
-          state: started
+        name: haproxy
+        enabled: yes
+        masked: no
+        state: started
