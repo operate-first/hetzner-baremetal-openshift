@@ -1,0 +1,17 @@
+# See the OWNERS docs at https://go.k8s.io/owners
+
+approvers:
+  - durandom
+  - tumido
+  - HumairAK
+  - rbo
+
+reviewers:
+  - durandom
+  - tumido
+  - HumairAK
+  - rbo
+  - 4n4nd
+  - harshad16
+  - goern
+  - larsks
