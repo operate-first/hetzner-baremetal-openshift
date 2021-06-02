@@ -2,6 +2,6 @@
 ---
 - hosts: nodes,bootstrap
   tasks:
-    - include_role:
+    - import_role:
         name: hetzner-baremetal-openshift
         tasks_from: run-installer.yaml

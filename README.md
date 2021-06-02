@@ -92,6 +92,17 @@ Boots into rescue mode and prepare rescue system to install Red Hat CoreOS
 
 #### Run the installer
 
+
 ```bash
 ./run-installer.yaml
 ```
+
+Optional split it into two steps:
+
+```bash
+./run-installer.yaml --skip-tags reboot
+# Check output
+./run-installer.yaml --tags reboot
+```
+
+Happy troubleshooting, every installation have some surprises. It is unpredictable how the hetzner react with the installation.
