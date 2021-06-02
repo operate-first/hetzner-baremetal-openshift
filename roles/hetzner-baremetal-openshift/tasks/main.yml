@@ -40,14 +40,6 @@
     group: root
     mode: '0600'
 
-# - name: "Create Network vlan{{ network_vlanid }}.nmconnection"
-#  ansible.builtin.template:
-#    src: vlan.nmconnection
-#    dest: "/root/network-config/vlan{{ network_vlanid }}.nmconnection"
-#    owner: root
-#    group: root
-#    mode: '0600'
-
 - name: "Create ssh-only.ignition"
   ansible.builtin.template:
     src: ssh-only.ignition
