@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - include_role:
-        name: provision-hetzner
+        name: hetzner-baremetal-openshift
         tasks_from: configure-firewall.yaml

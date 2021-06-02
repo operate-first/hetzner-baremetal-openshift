@@ -4,8 +4,10 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  roles:
-    - hcloud
+  tasks:
+    - include_role:
+        name: hetzner-baremetal-openshift
+        tasks_from: create-dns-lb.yaml
 
 - name: Basis installation
   hosts: lb
