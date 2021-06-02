@@ -11,4 +11,5 @@
 FROM registry.fedoraproject.org/fedora-toolbox
 RUN \
     dnf install -y ansible pip python3-google-auth.noarch && \
-    pip install hcloud
+    pip install hcloud && \
+    ansible-galaxy collection install -p /usr/share/ansible/collections community.hrobot

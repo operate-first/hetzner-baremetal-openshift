@@ -20,7 +20,12 @@ all:
     gcp_managed_zone_domain: example.com.
     gcp_project: example-com
     gcp_serviceaccount_file: example-asdf.json
+
 nodes:
+  children:
+    masters:
+
+masters:
   vars:
     install_device: /dev/sda
     network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"

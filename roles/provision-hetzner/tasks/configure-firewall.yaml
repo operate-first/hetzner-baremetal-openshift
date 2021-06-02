@@ -1,0 +1,63 @@
+---
+- name: Configure hrobot firewall
+  connection: local
+  block:
+    - name: Gather hcloud server infos
+      hcloud_server_info:
+        api_token: "{{ hcloud_api_token }}"
+        name: "{{cluster_name }}-lb-private"
+      register: output
+
+    - set_fact:
+        rules_input:
+          - name: Allow SSH
+            ip_version: ipv4
+            dst_port: '22'
+            protocol: tcp
+            action: accept
+          - name: Allow ICMP
+            ip_version: ipv4
+            protocol: icmp
+            action: accept
+          - name: Allow api and ingress
+            ip_version: ipv4
+            protocol: tcp
+            dst_port: '6443,443,80'
+            action: accept
+          - name: Allow MachineConfig
+            ip_version: ipv4
+            protocol: tcp
+            src_ip: "{{ output.hcloud_server_info[0].ipv4_address }}"
+            dst_port: '22623'
+            action: accept
+          - name: Allow outgoing connections
+            ip_version: ipv4
+            dst_port: '32768-65535'
+            protocol: tcp
+            tcp_flags: ack
+            action: accept
+
+    - set_fact:
+        rules_input: "{{ rules_input }} +
+          [
+            {
+              'name': 'Allow traffic from {{item}}',
+              'ip_version': 'ipv4',
+              'src_ip': '{{ hostvars[item].hetzner_ip }}',
+              'action': 'accept'
+            }
+          ]"
+      with_items: "{{ groups['masters'] + groups['bootstrap'] }}"
+      when: item != inventory_hostname
+
+    # - debug: var=rules_input
+
+    - community.hrobot.firewall:
+        hetzner_user: "{{ hetzner_webservice_username }}"
+        hetzner_password: "{{ hetzner_webservice_password }}"
+        server_ip: "{{ hetzner_ip }}"
+        state: present
+        whitelist_hos: yes
+        rules:
+          input: "{{ rules_input }}"
+
