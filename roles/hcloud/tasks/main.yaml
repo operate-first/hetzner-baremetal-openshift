@@ -1,5 +1,4 @@
 ---
-
 - hcloud_ssh_key:
     api_token: "{{ hcloud_api_token }}"
     name: operate-first
@@ -45,26 +44,26 @@
     state: present
     firewalls: "{{ firewall_output.hcloud_firewall.id }}"
     ssh_keys:
-    - operate-first
+      - operate-first
   register: output
 
 - name: Create DNS record at GCP
   gcp_dns_resource_record_set:
     name: "{{ item }}.{{ cluster_name }}.{{ base_domain }}."
     managed_zone:
-        name: "{{ gcp_managed_zone_name }}"
-        dnsName: "{{ gcp_managed_zone_domain }}"
+      name: "{{ gcp_managed_zone_name }}"
+      dnsName: "{{ gcp_managed_zone_domain }}"
     type: A
     ttl: 120
     target:
-    - "{{output.hcloud_server.ipv4_address}}"
+      - "{{output.hcloud_server.ipv4_address}}"
     project: "{{ gcp_project }}"
     auth_kind: serviceaccount
     service_account_file: "{{ gcp_serviceaccount_file }}"
     state: present
   with_items:
-  - api-int
-  - "{{cluster_name }}-lb-private"
+    - api-int
+    - "{{cluster_name }}-lb-private"
 
 - name: Create lb-public
   hetzner.hcloud.hcloud_load_balancer:
@@ -82,7 +81,6 @@
     ip: "{{ item }}"
   with_items: "{{ groups['nodes'] | map ('extract', hostvars, 'hetzner_ip') | list }}"
 
-
 - hetzner.hcloud.hcloud_load_balancer_service:
     api_token: "{{ hcloud_api_token }}"
     load_balancer: "{{cluster_name }}-lb-public"
@@ -94,29 +92,28 @@
     - 443
     - 6443
 
-
 - name: Create DNS record at GCP
   gcp_dns_resource_record_set:
     name: "{{ item }}.{{ cluster_name }}.{{ base_domain }}."
     managed_zone:
-        name: "{{ gcp_managed_zone_name }}"
-        dnsName: "{{ gcp_managed_zone_domain }}"
+      name: "{{ gcp_managed_zone_name }}"
+      dnsName: "{{ gcp_managed_zone_domain }}"
     type: A
     ttl: 120
     target:
-    - "{{lb_public.hcloud_load_balancer.ipv4_address}}"
+      - "{{lb_public.hcloud_load_balancer.ipv4_address}}"
     project: "{{ gcp_project }}"
     auth_kind: serviceaccount
     service_account_file: "{{ gcp_serviceaccount_file }}"
     state: present
   with_items:
-  - api
-  - '*.apps'
+    - api
+    - "*.apps"
 
 - name: Wait 300 seconds for port 22 to become open
   wait_for:
     port: 22
-    host: '{{ output.hcloud_server.ipv4_address }}'
+    host: "{{ output.hcloud_server.ipv4_address }}"
     delay: 1
     timeout: 300
   connection: local
@@ -125,5 +122,5 @@
   add_host:
     hostname: lb
     ansible_user: root
-    ansible_host: '{{ output.hcloud_server.ipv4_address }}'
+    ansible_host: "{{ output.hcloud_server.ipv4_address }}"
     groups: hetzner

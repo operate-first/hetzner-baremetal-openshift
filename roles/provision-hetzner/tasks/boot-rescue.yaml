@@ -22,7 +22,7 @@
   delegate_to: localhost
 
 - name: Activate rescue mode
-  when:  rescue.json.rescue.active == false
+  when: rescue.json.rescue.active == false
   uri:
     url: "https://robot-ws.your-server.de/boot/{{ hetzner_ip }}/rescue"
     method: POST
@@ -63,7 +63,7 @@
 - name: Wait 300 seconds for port 22 to become open
   wait_for:
     port: 22
-    host: '{{ inventory_hostname }}'
+    host: "{{ inventory_hostname }}"
     delay: 10
     timeout: 300
   connection: local

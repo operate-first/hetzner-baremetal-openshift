@@ -63,4 +63,3 @@ method=auto
 # Brdige stuff
 
 https://lukas.zapletalovi.com/2015/09/fedora-22-libvirt-with-bridge.html
-
