@@ -106,3 +106,7 @@ Optional split it into two steps:
 ```
 
 Happy troubleshooting, every installation have some surprises. It is unpredictable how the hetzner react with the installation.
+
+### OpenShift reinstallation
+
+Its recommended to wipe the disk with `wipe-server.yaml` playbook bevor reinstallation.

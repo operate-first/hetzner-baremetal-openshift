@@ -21,6 +21,9 @@ all:
     gcp_project: example-com
     gcp_serviceaccount_file: example-asdf.json
 
+    hetzner_disk1: sda
+    hetzner_disk2: sdb
+
 nodes:
   children:
     masters:

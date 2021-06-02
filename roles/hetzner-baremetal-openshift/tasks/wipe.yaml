@@ -1,0 +1,9 @@
+---
+- include_tasks: boot-rescue.yaml
+  when: ansible_hostname != 'rescue'
+
+- name: Wipe disk one
+  shell: "wipefs -a /dev/{{ hetzner_disk1 }}"
+
+- name: Wipe disk two
+  shell: "wipefs -a /dev/{{ hetzner_disk2 }}"
