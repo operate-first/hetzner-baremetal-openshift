@@ -7,7 +7,7 @@
 
 ## Issues to solve
 
-### prodect machine config server (22623)
+### protect machine config server (22623)
 
 Currently :22623 is public available, it should be only available for nodes.
 
@@ -29,7 +29,18 @@ Source Adress is the address of the load balancer :-(
 
 ## High level steps
 
-### Order bare metal server
+### Order baremetal server
+### Prepare baremetal server
+
+  * add dns entries - A and PTR
+  * Install centos 8
+    * document interface name
+  * Test CoreOS installation (Note: coreos use EFI boot)
+  * Switch to EFI boot via Ticket, example tickets:
+      * Ticket#2021050503020988
+      * Ticket#2021050603003594
+      * Ticket#2021051903013942
+
 ### Setup Network
 #### Attach dedicated server to vSwitch
 #### Configure dedicated server firewall (allow internal traffic)
