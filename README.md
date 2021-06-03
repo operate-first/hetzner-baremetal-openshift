@@ -105,8 +105,6 @@ Optional split it into two steps:
 ./run-installer.yaml --tags reboot
 ```
 
-Happy troubleshooting, every installation have some surprises. It is unpredictable how the hetzner react with the installation.
-
 ### OpenShift reinstallation
 
 Its recommended to wipe the disk with `wipe-server.yaml` playbook bevor reinstallation.
