@@ -60,4 +60,3 @@
         whitelist_hos: yes
         rules:
           input: "{{ rules_input }}"
-
