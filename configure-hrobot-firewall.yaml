@@ -6,4 +6,3 @@
     - include_role:
         name: hetzner-baremetal-openshift
         tasks_from: configure-firewall.yaml
-p
