@@ -1,0 +1,8 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes,bootstrap
+  gather_facts: true
+  tasks:
+    - import_role:
+        name: hetzner-baremetal-openshift
+        tasks_from: wipe.yaml

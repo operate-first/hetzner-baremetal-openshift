@@ -1,0 +1,8 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes,bootstrap
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: hetzner-baremetal-openshift
+        tasks_from: boot-rescue.yaml

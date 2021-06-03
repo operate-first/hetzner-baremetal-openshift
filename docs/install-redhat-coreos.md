@@ -1,47 +1,61 @@
+# How to install Red Hat CoreOS
 
-# Ignition tests
+### Install coreos on hetzner baremetal
 
-Resources
- * https://docs.fedoraproject.org/en-US/fedora-coreos/hostname/
- *
+**Important: RHCOS supports only ignition.version 3.1.0**
+![](docs/ioctl-error.png)
 
-
-## Generate ignition
-
+Boot into rescue system:
 ```
-podman run -i --rm quay.io/coreos/fcct:release --pretty --strict < first-boot.fcc > first-boot.ign
-```
-
-
-
-
-## coreos-installer
-
-```bash
-sudo coreos-installer install /dev/sda --ignition-url https://raw.githubusercontent.com/rbo/hetzner-baremetal-openshift/main/ignition/first-boot.ign
-```
-
-Add `--copy-network --firstboot-args="rd.neednet=1"` if you want fo copy network config
-
-
-## Use another rescue system
-
-```bash
 curl -L -O https://mirror.openshift.com/pub/openshift-v4/clients/coreos-installer/v0.6.0-3/coreos-installer
 chmod +x coreos-installer
 
 curl -L -O https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.1/rhcos-4.6.1-x86_64-metal.x86_64.raw.gz
 
 ./coreos-installer install /dev/nvme0n1 \
-  --ignition-file master-1.ign \
+  --ignition-file config.ignition \
   --copy-network --firstboot-args="rd.neednet=1" \
-  --network-dir ./master-1/ \
+  --network-dir ./network-config/ \
   --insecure \
   --image-file rhcos-4.6.1-x86_64-metal.x86_64.raw.gz
-
 ```
 
+
+
+Example:
+
+first-boot.ign
+```json
+{
+  "ignition": {
+    "version": "3.1.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAOfl+764UFbDkkxpsQYjET7ZAWoVApSf4I64L1KImoc rbohne@redhat.com"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,host02.emea.operate-first.cloud"
+        },
+        "mode": 420
+      }
+    ]
+  }
+}
 ```
+
+```bash
+
 root@rescue ~ # ./coreos-installer install /dev/nvme0n1 \
 >   --ignition-file ignition/first-boot.ign \
 >   --copy-network --firstboot-args="rd.neednet=1" \
@@ -59,3 +73,4 @@ Copying networking configuration from ./network-config/
 Copying ./network-config/vlan4000.nmconnection to installed system
 Copying ./network-config/enp4s0.nmconnection to installed system
 Install complete.
+```

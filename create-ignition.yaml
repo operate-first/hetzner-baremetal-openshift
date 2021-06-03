@@ -3,5 +3,5 @@
 - hosts: nodes,bootstrap
   tasks:
     - include_role:
-        name: provision-hetzner
-        tasks_from: run-installer.yaml
+        name: hetzner-baremetal-openshift
+        tasks_from: create-ignition.yaml

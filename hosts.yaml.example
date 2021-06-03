@@ -20,12 +20,19 @@ all:
     gcp_managed_zone_domain: example.com.
     gcp_project: example-com
     gcp_serviceaccount_file: example-asdf.json
+
+    hetzner_disk1: sda
+    hetzner_disk2: sdb
+
 nodes:
+  children:
+    masters:
+
+masters:
   vars:
     install_device: /dev/sda
     network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
 
-    network_vlanid: 4000
     network_primary_interface: enp0s31f6
     network_mask: 26
     ignition_name: master.ign
@@ -53,7 +60,6 @@ bootstrap:
   vars:
     install_device: /dev/sda
     network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
-    network_vlanid: 4000
     network_primary_interface: enp0s31f6
     network_mask: 26
     ignition_name: bootstrap.ign

@@ -4,8 +4,10 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  roles:
-    - hcloud
+  tasks:
+    - include_role:
+        name: hetzner-baremetal-openshift
+        tasks_from: create-dns-lb.yaml
 
 - name: Basis installation
   hosts: lb
@@ -15,7 +17,8 @@
       package:
         name:
           - haproxy
-          # To get stats: echo "show stat" | nc -U /var/lib/haproxy/stats | cut -d "," -f 1,2,18,57| column -s, -t;
+          # To get stats:
+          # echo "show stat" | nc -U /var/lib/haproxy/stats | cut -d "," -f 1,2,18,57| column -s, -t;
           - nc
         state: present
 

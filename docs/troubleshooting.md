@@ -1,7 +1,11 @@
-```
+# Troubleshooting
+
+
+## Server do not boot => Check boot flag
+
 Check boot disk flag
 ```
-fdisk -l /dev/nvme0n1
+$ fdisk -l /dev/nvme0n1
 Disk /dev/nvme0n1: 477 GiB, 512110190592 bytes, 1000215216 sectors
 Disk model: THNSN5512GPU7 TOSHIBA
 Units: sectors of 1 * 512 = 512 bytes
@@ -14,7 +18,7 @@ Device         Boot Start       End   Sectors   Size Id Type
 /dev/nvme0n1p1       2048 237365247 237363200 113.2G 8e Linux LVM
 ```
 
-
+```
 gdisk /dev/nvme1n1
 GPT fdisk (gdisk) version 1.0.3
 
@@ -23,6 +27,10 @@ Partition table scan:
   BSD: not present
   APM: not present
   GPT: not present
+```
 
+## How to delete mbr
 
-Delete mbr: dd if=/dev/zero of=/dev/sdc bs=512 count=1
+```
+dd if=/dev/zero of=/dev/sdc bs=512 count=1
+```

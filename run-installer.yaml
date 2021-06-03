@@ -1,0 +1,7 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes,bootstrap
+  tasks:
+    - import_role:
+        name: hetzner-baremetal-openshift
+        tasks_from: run-installer.yaml

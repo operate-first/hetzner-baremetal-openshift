@@ -3,4 +3,4 @@
 - hosts: nodes,bootstrap
   gather_facts: true
   roles:
-    - provision-hetzner
+    - hetzner-baremetal-openshift

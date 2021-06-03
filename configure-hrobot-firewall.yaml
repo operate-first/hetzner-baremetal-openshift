@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - include_role:
-        name: provision-hetzner
-        tasks_from: boot-rescue.yaml
+        name: hetzner-baremetal-openshift
+        tasks_from: configure-firewall.yaml
