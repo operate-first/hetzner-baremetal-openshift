@@ -40,18 +40,15 @@ masters:
   hosts:
     host01.example.com:
       internal_hostname: host01.example.com
-      internal_ip: 172.22.2.3
       hetzner_ip: 1.1.1.35
       network_gateway: 1.1.1.1
     host02.example.com:
       internal_hostname: host02.example.com
-      internal_ip: 172.22.2.4
       hetzner_ip: 2.2.2.2.217
       network_gateway: 2.2.2.2.193
     host03.example.com:
       network_primary_interface: enp3s0
       internal_hostname: host03.example.com
-      internal_ip: 172.22.2.5
       hetzner_ip: 3.3.3.3.105
       network_gateway: 3.3.3.3.65
 
@@ -66,6 +63,5 @@ bootstrap:
   hosts:
     host04.example.com:
       internal_hostname: host04.example.com
-      internal_ip: 172.22.2.6
       hetzner_ip: 4.4.4.4.215
       network_gateway: 4.4.4.4.193
