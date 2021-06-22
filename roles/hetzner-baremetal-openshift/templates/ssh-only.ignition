@@ -17,7 +17,7 @@
       {
         "path": "/etc/hostname",
         "contents": {
-          "source": "data:,{{ internal_hostname }}"
+          "source": "data:,{{ inventory_hostname }}"
         },
         "mode": 420
       }
