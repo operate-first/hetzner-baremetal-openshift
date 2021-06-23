@@ -13,43 +13,6 @@ cp -v hosts.yaml.example hosts.yaml
 $EDITOR hosts.yaml
 ```
 
-### Hardware preperations
-
-  * Order a BareMetal Server - Issue for sizing: #6
-
-  * Configure DNS ( A & PTR ) for BareMetal Server
-      `<hostname>.emea.operate-first.cloud`
-
-  * [Install Centos 8 to determine the network interface name](docs/install-centos-8.md)
-
-  * Add server to `hosts.yaml`
-
-  * Run a RH CoreOS Test installation with ssh-only ignition
-    ```bash
-    ./reset-server.yaml [-l hostname]
-    # SSh into rescue system and run coreos-install command printed out at the end ot the playbook.
-
-    ```
-
-    Check installation, server boot? Can connect via SSH?
-
-  * Boot Rescue mode - should fail! :-)
-
-    ```bash
-    ./force-rescue-mode.yaml [-l hostname]
-    ```
-
-    Check if resecue system is booted:
-
-      **If NOT**: File a ticket to switch into EFI boot (Example Tickets: Ticket#2021050503020988, Ticket#2021050603003594, Ticket#2021051903013942)
-
-  * Check if you can switch between RH CoreOS and rescue mode.
-
-  * Configure firewall
-    ```bash
-    ./configure-hrobot-firewall.yaml [-l hostname]
-    ```
-
 ### DNS & load balancer preperations
 
   * Configure load balancer:
@@ -68,6 +31,45 @@ All steps are done with one single playbook:
 ```bash
 ./configure-lb-and-dns.yaml
 ```
+
+### Hardware preperations
+
+  * Order a BareMetal Server - Issue for sizing: #6
+
+  * Configure DNS ( A & PTR ) for BareMetal Server
+      `<hostname>.emea.operate-first.cloud`
+
+  * [Install Centos 8 to determine the network interface name](docs/install-centos-8.md)
+
+  * Add server to `hosts.yaml`
+
+  * Run a RH CoreOS Test installation with ssh-only ignition
+    ```bash
+    ./reset-server.yaml [-l hostname]
+    # SSh into rescue system and run coreos-install
+    #  command printed out at the end ot the playbook.
+
+
+    ```
+
+    Check installation, server boot? Can connect via SSH?
+
+  * Boot Rescue mode
+
+    ```bash
+    ./force-rescue-mode.yaml [-l hostname]
+    ```
+
+    Check if resecue system is booted:
+
+      **If NOT**: File a ticket to switch into EFI boot (Example Tickets: Ticket#2021050503020988, Ticket#2021050603003594, Ticket#2021051903013942)
+
+  * Check if you can switch between RH CoreOS and rescue mode.
+
+  * Configure firewall
+    ```bash
+    ./configure-hrobot-firewall.yaml [-l hostname]
+    ```
 
 ### OpenShift installation
 
