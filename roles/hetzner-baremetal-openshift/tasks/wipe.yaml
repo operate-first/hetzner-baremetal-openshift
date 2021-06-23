@@ -3,7 +3,7 @@
   when: ansible_hostname != 'rescue'
 
 - name: Stop default hetzner sw raid setup
-  shell: "mdadm --stop md0 md1 md2"
+  shell: "mdadm --stop md0 md1 md2 md126 md127"
 
 - name: Wipe disk one
   shell: "wipefs -a /dev/{{ hetzner_disk1 }}"
