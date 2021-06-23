@@ -2,9 +2,19 @@
 
 ## Network Overview
 
-![Network overview](docs/nimages/etwork-overview-v3.png)
+![Network overview](docs/images/network-overview-v3.png)
 
 ## Installation
+
+You can run all playbooks inside a toolbox [![Docker Repository on Quay](https://quay.io/repository/operate-first/hetzner-baremetal-toolbox/status "Docker Repository on Quay")](https://quay.io/repository/operate-first/hetzner-baremetal-toolbox) :
+
+```bash
+toolbox create --image quay.io/operate-first/hetzner-baremetal-toolbox hetzner-toolbox
+toolbox enter hetzner-toolbox
+```
+
+Source of the toolbox [Containerfile](/Containerfile)
+
 
 ### Create initial hosts.yaml based on hosts.yaml.example
 
