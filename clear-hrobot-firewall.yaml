@@ -1,0 +1,14 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: nodes,bootstrap
+  gather_facts: false
+  connection: local
+  tasks:
+    - community.hrobot.firewall:
+        hetzner_user: "{{ hetzner_webservice_username }}"
+        hetzner_password: "{{ hetzner_webservice_password }}"
+        server_ip: "{{ hetzner_ip }}"
+        state: absent
+        whitelist_hos: yes
+        rules:
+          input:
