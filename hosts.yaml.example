@@ -27,6 +27,25 @@ all:
 nodes:
   children:
     masters:
+    workers:
+    bootstrap:
+
+workers:
+  vars:
+    install_device: /dev/sda
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+
+    network_primary_interface: enp4s0
+    network_mask: 26
+    ignition_name: worker.ign
+  hosts:
+    host05.example.com:
+      hetzner_ip: 138.201.33.199
+      network_gateway: 138.201.33.193
+
+    host06.example.com:
+      hetzner_ip: 138.201.33.87
+      network_gateway: 138.201.33.65
 
 masters:
   vars:
