@@ -4,6 +4,14 @@
 
 ![Network overview](docs/images/network-overview-v3.png)
 
+
+## Cluster design
+
+* 3 Master
+* 3 Worker
+
+One of the worker is used to be the bootstrap during installation.
+
 ## Installation
 
 You can run all playbooks inside a toolbox [![Docker Repository on Quay](https://quay.io/repository/operate-first/hetzner-baremetal-toolbox/status "Docker Repository on Quay")](https://quay.io/repository/operate-first/hetzner-baremetal-toolbox) :
@@ -96,6 +104,15 @@ Boots into rescue mode and prepare rescue system to install Red Hat CoreOS
 ./reset-server.yaml
 ```
 
+#### Wipe  server
+
+To ensure nothing is on the disk wipe it:
+
+```bash
+./wipe-server.yaml
+```
+
+
 #### Create ignition config and transfer to hosts
 
 ```bash
@@ -115,6 +132,93 @@ Optional split it into two steps:
 ./run-installer.yaml --skip-tags reboot
 # Check output
 ./run-installer.yaml --tags reboot
+```
+
+#### During installation watch for CSR
+
+Accept pending CSR from your worker nodes
+
+```bash
+oc get csr | awk '/Pending/ { print $1}' | xargs -n1 oc adm certificate approve
+```
+
+### Add bootstrap node as worker
+
+#### Adjust haproxy config
+
+```bash
+ssh -l root -i <private-key> <private lb vm>
+vi /etc/haproxy/haproxy.cfg
+systemctl reload haproxy
+```
+
+<details>
+  <summary>Check a proxy stats</summary>
+
+```bash
+echo "show stat" | nc -U /var/lib/haproxy/stats | cut -d "," -f 1,2,18,57| column -s, -t;
+# pxname               svname                           status  last_chk
+machine-config-server  FRONTEND                         OPEN
+machine-config-server  host01.example.com  UP
+machine-config-server  host02.example.com  UP
+machine-config-server  host04.example.com  UP
+machine-config-server  BACKEND                          UP
+api                    FRONTEND                         OPEN
+api                    host01.example.com  UP
+api                    host02.example.com  UP
+api                    host04.example.com  UP
+api                    BACKEND                          UP
+```
+
+</details>
+
+#### Adjust `host.yaml`
+
+Move bootstrap node from bootstrap to worker hostgroup.
+
+#### Boot rescure mode
+
+```bash
+ ./force-rescue-mode.yaml -l <bootstrap-node>
+```
+
+#### Prepare installation
+```bash
+./reset-server.yaml -l <bootstrap-node>
+```
+
+#### Preare ignition config
+```bash
+./create-ignition.yaml -l <bootstrap-node>
+```
+
+#### Wipe server
+
+```bash
+./wipe-server.yaml -l <bootstrap-node>
+```
+
+#### Run the installer
+
+
+```bash
+./run-installer.yaml -l <bootstrap-node>
+```
+
+Optional split it into two steps:
+
+```bash
+./run-installer.yaml --skip-tags reboot -l <bootstrap-node>
+# Check output
+./run-installer.yaml --tags reboot -l <bootstrap-node>
+```
+
+#### Watch for pending CSRs
+
+Accept pending CSR from your worker node.
+
+```bash
+oc get csr | awk '/Pending/ { print $1}' | xargs -n1 oc adm certificate approve
 ```
 
 ### OpenShift reinstallation
