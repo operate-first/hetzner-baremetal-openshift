@@ -221,6 +221,16 @@ Accept pending CSR from your worker node.
 oc get csr | awk '/Pending/ { print $1}' | xargs -n1 oc adm certificate approve
 ```
 
+### Post installation
+
+#### Remove worker label from master
+
+```
+oc edit scheduler
+```
+Change `mastersSchedulable: true` to `mastersSchedulable: false`
+
+
 ### OpenShift reinstallation
 
 Its recommended to wipe the disk with `wipe-server.yaml` playbook bevor reinstallation.
