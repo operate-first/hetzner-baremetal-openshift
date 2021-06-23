@@ -40,30 +40,36 @@
     command: "{{ openshift_install_command }} --dir={{ openshift_install_dir }} create ignition-configs"
     args:
       creates: "{{ openshift_install_dir}}/bootstrap.ign"
+# End block with local execution
 
-
-- name: Fetch master ignition
-  set_fact:
-    source_ignition: "{{ lookup('file',  openshift_install_dir ~ '/' ~ ignition_name )}}"
-
-- name: Build storage.files
-  set_fact:
-    files: "{{ source_ignition.storage.files | default([]) + [
-        {
-          'path': '/etc/hostname',
-          'contents': {
-            'source': 'data:,' ~ inventory_hostname
-          },
-          'mode': 420
-        }
-    ] }}"
-
-
-- name: Build storage part
-  set_fact:
-    storage: "{ 'storage': {'files': {{files}} } }"
-
-- name: Create ignition
+- name: Create RHCOS Config
   copy:
-    content: "{{ source_ignition | combine( storage ) }}"
-    dest: /root/config.ignition
+    dest: /root/config.rcc
+    content: |
+      variant: rhcos
+      version: 0.1.0
+      ignition:
+        config:
+          merge:
+            - local: {{ ignition_name }}
+      {% if inventory_hostname in groups['masters'] %}
+      boot_device:
+        mirror:
+          devices:
+            - /dev/{{ hetzner_disk1 }}
+            - /dev/{{ hetzner_disk2 }}
+      {% endif %}
+      storage:
+        files:
+          - path: /etc/hostname
+            contents:
+              source: data:,{{ inventory_hostname }}
+            mode: 420
+
+- name: Copy ignition
+  copy:
+    src: "{{ openshift_install_dir }}/{{ ignition_name }}"
+    dest: "/root/{{ ignition_name }}"
+
+- name: Mangle ignition config
+  command: "{{ butane }} --files-dir . config.rcc --output config.ignition"
