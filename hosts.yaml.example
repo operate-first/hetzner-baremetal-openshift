@@ -27,6 +27,25 @@ all:
 nodes:
   children:
     masters:
+    workers:
+    bootstrap:
+
+workers:
+  vars:
+    install_device: /dev/sda
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+
+    network_primary_interface: enp4s0
+    network_mask: 26
+    ignition_name: worker.ign
+  hosts:
+    host05.example.com:
+      hetzner_ip: 138.201.33.199
+      network_gateway: 138.201.33.193
+
+    host06.example.com:
+      hetzner_ip: 138.201.33.87
+      network_gateway: 138.201.33.65
 
 masters:
   vars:
@@ -39,19 +58,13 @@ masters:
 
   hosts:
     host01.example.com:
-      internal_hostname: host01.example.com
-      internal_ip: 172.22.2.3
       hetzner_ip: 1.1.1.35
       network_gateway: 1.1.1.1
     host02.example.com:
-      internal_hostname: host02.example.com
-      internal_ip: 172.22.2.4
       hetzner_ip: 2.2.2.2.217
       network_gateway: 2.2.2.2.193
     host03.example.com:
       network_primary_interface: enp3s0
-      internal_hostname: host03.example.com
-      internal_ip: 172.22.2.5
       hetzner_ip: 3.3.3.3.105
       network_gateway: 3.3.3.3.65
 
@@ -65,7 +78,5 @@ bootstrap:
     ignition_name: bootstrap.ign
   hosts:
     host04.example.com:
-      internal_hostname: host04.example.com
-      internal_ip: 172.22.2.6
       hetzner_ip: 4.4.4.4.215
       network_gateway: 4.4.4.4.193

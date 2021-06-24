@@ -67,7 +67,7 @@
               bind :22623
               mode tcp
 
-              {% for host in groups['nodes'] -%}
+              {% for host in groups['masters'] -%}
               server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
               {% endfor -%}
 
@@ -78,7 +78,7 @@
               bind :6443
               mode tcp
 
-              {% for host in groups['nodes'] -%}
+              {% for host in groups['masters'] -%}
               server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
               {% endfor -%}
 

@@ -34,3 +34,29 @@ Partition table scan:
 ```
 dd if=/dev/zero of=/dev/sdc bs=512 count=1
 ```
+
+## Delete software raid
+
+In case `./wipe-server.yaml` failes with `Device or resource busy`, please check software raid:
+
+```bash
+root@rescue ~ # cat /proc/mdstat
+Personalities : [raid1]
+md2 : active raid1 sdb3[0] sda3[1]
+      463998784 blocks super 1.2 [2/2] [UU]
+      [===>.................]  resync = 15.7% (73277376/463998784) finish=32.1min speed=202359K/sec
+      bitmap: 4/4 pages [16KB], 65536KB chunk
+
+md1 : active raid1 sdb2[0] sda2[1]
+      523264 blocks super 1.2 [2/2] [UU]
+
+md0 : active raid1 sdb1[0] sda1[1]
+      4189184 blocks super 1.2 [2/2] [UU]
+
+unused devices: <none>
+
+root@rescue ~ # mdadm --stop md0 md1 md2
+mdadm: stopped md0
+mdadm: stopped md1
+mdadm: stopped md2
+```

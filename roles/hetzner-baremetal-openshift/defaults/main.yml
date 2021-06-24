@@ -9,8 +9,12 @@ coreos_install_url: "https://mirror.openshift.com/pub/openshift-v4/clients/coreo
 coreos_image_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz"
 coreos_image: /root/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz
 
+butane_url: "https://mirror.openshift.com/pub/openshift-v4/clients/butane/v0.12.1-1/butane-amd64"
+butane: /root/butane
+
 openshift_install_dir: "{{ playbook_dir }}/{{ cluster_name }}/"
-openshift_install_command: "openshift-install"
+# Part of toolbox quay.io/operate-first/hetzner-baremetal-toolbox
+openshift_install_command: "/usr/local/bin/openshift-install"
 # hetzner_webservice_username:
 # hetzner_webservice_password:
 # hetzner_hostname: "hostname.example.com"

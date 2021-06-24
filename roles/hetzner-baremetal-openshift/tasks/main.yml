@@ -14,6 +14,7 @@
   with_items:
     - "{{ coreos_install_url }}"
     - "{{ coreos_image_url }}"
+    - "{{ butane_url }}"
 
 
 - name: Download RCOS
@@ -25,6 +26,12 @@
   get_url:
     url: "{{ coreos_install_url }}"
     dest: "/root/{{ coreos_install_url | basename }}"
+    mode: a+x
+
+- name: Download butane
+  get_url:
+    url: "{{ butane_url }}"
+    dest: "{{ butane }}"
     mode: a+x
 
 - name: Create network config folder
