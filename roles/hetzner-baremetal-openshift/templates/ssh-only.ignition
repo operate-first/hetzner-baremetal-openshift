@@ -17,7 +17,7 @@
       {
         "path": "/etc/hostname",
         "contents": {
-          "source": "data:,{{ inventory_hostname }}"
+          "source": "data:,{{ inventory_hostname_short }}-private.{{ base_domain }}"
         },
         "mode": 420
       }

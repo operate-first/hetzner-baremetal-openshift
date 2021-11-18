@@ -57,9 +57,16 @@ All steps are done with one single playbook:
   * Configure DNS ( A & PTR ) for BareMetal Server
       `<hostname>.emea.operate-first.cloud`
 
+  * Attach server to private vSwitch
+
   * [Install Centos 8 to determine the network interface name](docs/install-centos-8.md)
 
+  * Check network interface names on centos 8: `ansible -m shell -a "ip link | grep enp | cut -f2 -d':'" all`
+
   * Add server to `hosts.yaml`
+
+  * Wipe all servers after Centos 8 installaion: `./wipe.yaml`
+    Please run `./wipe.yaml` again if some failed agure.
 
   * Run a RH CoreOS Test installation with ssh-only ignition
     ```bash
