@@ -5,3 +5,4 @@
 * Select tab "Linux"
 
 ![Centos 8 installation](images/centos-8-installation.png)
+
