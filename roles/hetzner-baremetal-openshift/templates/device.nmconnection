@@ -19,4 +19,4 @@ dns={{ network_dns }}
 [ipv6]
 addr-gen-mode=stable-privacy
 dns-search=
-method=auto
+method=disabled
