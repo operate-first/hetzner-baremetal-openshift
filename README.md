@@ -57,6 +57,8 @@ All steps are done with one single playbook:
   * Configure DNS ( A & PTR ) for BareMetal Server
       `<hostname>.emea.operate-first.cloud`
 
+  * Create private vSwitch and add ID to `hosts.yaml`
+
   * Attach server to private vSwitch
 
   * [Install Centos 8 to determine the network interface name](docs/install-centos-8.md)
@@ -73,8 +75,6 @@ All steps are done with one single playbook:
     ./reset-server.yaml [-l hostname]
     # SSh into rescue system and run coreos-install
     #  command printed out at the end ot the playbook.
-
-
     ```
 
     Check installation, server boot? Can connect via SSH?
