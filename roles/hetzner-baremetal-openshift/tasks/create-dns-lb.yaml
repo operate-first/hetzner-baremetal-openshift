@@ -13,6 +13,33 @@
 #     state: present
 #   register: public_ip
 
+- name: Create network
+  hetzner.hcloud.hcloud_network:
+    api_token: "{{ hcloud_api_token }}"
+    name: "{{ cluster_name }}"
+    ip_range: 192.168.0.0/16
+    state: present
+
+- name: Attach vSwitch to network
+  hetzner.hcloud.hcloud_subnetwork:
+    api_token: "{{ hcloud_api_token }}"
+    network: "{{ cluster_name }}"
+    ip_range: "{{ privat_subnet }}"
+    network_zone: eu-central
+    type: vswitch
+    vswitch_id: "{{ network_vswitch_id }}"
+    state: present
+
+- name: Create subnet
+  hetzner.hcloud.hcloud_subnetwork:
+    api_token: "{{ hcloud_api_token }}"
+    network: "{{ cluster_name }}"
+    ip_range: "192.168.34.0/24"
+    network_zone: eu-central
+    type: cloud
+    vswitch_id: "{{ network_vswitch_id }}"
+    state: present
+
 - name: Create a firewall with rules
   hetzner.hcloud.hcloud_firewall:
     api_token: "{{ hcloud_api_token }}"
@@ -23,14 +50,6 @@
         port: "22"
         source_ips:
           - 0.0.0.0/0
-      - direction: in
-        protocol: tcp
-        port: "22623"
-        source_ips: "{{ groups['all'] | map ('extract', hostvars, 'hetzner_ip') | map('map_format', '%s/32' ) | list }}"
-      - direction: in
-        protocol: tcp
-        port: "6443"
-        source_ips: "{{ groups['all'] | map ('extract', hostvars, 'hetzner_ip') | map('map_format', '%s/32' ) | list }}"
     state: present
   register: firewall_output
 
@@ -47,9 +66,31 @@
       - operate-first
   register: output
 
+- name: Attach network to server
+  hetzner.hcloud.hcloud_server_network:
+    api_token: "{{ hcloud_api_token }}"
+    network: "{{ cluster_name }}"
+    server: "{{cluster_name }}-lb-private"
+    state: present
+
 - name: Create DNS record at GCP
   gcp_dns_resource_record_set:
-    name: "{{ item }}.{{ cluster_name }}.{{ base_domain }}."
+    name: "api-int.{{ cluster_name }}.{{ base_domain }}."
+    managed_zone:
+      name: "{{ gcp_managed_zone_name }}"
+      dnsName: "{{ gcp_managed_zone_domain }}"
+    type: A
+    ttl: 120
+    target:
+      - "192.168.34.1"
+    project: "{{ gcp_project }}"
+    auth_kind: serviceaccount
+    service_account_file: "{{ gcp_serviceaccount_file }}"
+    state: present
+
+- name: Create DNS record at GCP
+  gcp_dns_resource_record_set:
+    name: "{{cluster_name }}-lb-private.{{ base_domain }}."
     managed_zone:
       name: "{{ gcp_managed_zone_name }}"
       dnsName: "{{ gcp_managed_zone_domain }}"
@@ -61,9 +102,6 @@
     auth_kind: serviceaccount
     service_account_file: "{{ gcp_serviceaccount_file }}"
     state: present
-  with_items:
-    - api-int
-    - "{{cluster_name }}-lb-private"
 
 - name: Create lb-public
   hetzner.hcloud.hcloud_load_balancer:
