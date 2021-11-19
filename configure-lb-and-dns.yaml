@@ -64,26 +64,26 @@
               maxconn                 3000
 
           listen machine-config-server
-              bind :22623
+              bind 192.168.34.1:22623
               mode tcp
 
               {% for host in groups['masters'] -%}
-              server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
+              server {{ host }} {{ hostvars[host].internal_ip }}:22623 check
               {% endfor -%}
 
               {% for host in groups['bootstrap'] -%}
-              server {{ host }} {{ hostvars[host].hetzner_ip }}:22623 check
+              server {{ host }} {{ hostvars[host].internal_ip }}:22623 check
               {% endfor -%}
           listen api
-              bind :6443
+              bind 192.168.34.1:6443
               mode tcp
 
               {% for host in groups['masters'] -%}
-              server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
+              server {{ host }} {{ hostvars[host].internal_ip }}:6443 check
               {% endfor -%}
 
               {% for host in groups['bootstrap'] -%}
-              server {{ host }} {{ hostvars[host].hetzner_ip }}:6443 check
+              server {{ host }} {{ hostvars[host].internal_ip }}:6443 check
               {% endfor -%}
 
     - name: enable haproxy
