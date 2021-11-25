@@ -17,6 +17,8 @@ networking:
   networkType: OpenShiftSDN
   serviceNetwork:
   - 172.30.0.0/16
+  machineNetwork:
+  - cidr: {{ privat_subnet }}
 platform:
   none: {}
 fips: false
