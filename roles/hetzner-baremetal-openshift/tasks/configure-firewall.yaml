@@ -44,8 +44,9 @@
               'action': 'accept'
             }
           ]"
-      with_items: "{{ groups['masters'] + groups['bootstrap'] }}"
-      when: item != inventory_hostname
+      when: "'masters' not in group_names or 'bootstrap' not in group_names"
+      # with_items: "{{ groups['masters'] + groups['bootstrap'] }}"
+      # when: item != inventory_hostname
 
 
     - name: Allow ingress traffic to workers
@@ -59,8 +60,9 @@
               'action': 'accept'
             }
           ]"
-      with_items: "{{ groups['workers'] }}"
-      when: item != inventory_hostname
+      when: "'workers' not in group_names"
+      # with_items: "{{ groups['workers'] }}"
+      # when: item != inventory_hostname
 
     # - debug: var=rules_input
 
