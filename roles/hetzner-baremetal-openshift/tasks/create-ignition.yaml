@@ -23,47 +23,25 @@
     command: "{{ openshift_install_command }} --dir={{ openshift_install_dir }} create manifests"
 
 
-  # - name: Enable IPSec
-  #   copy:
-  #     dest: "{{ openshift_install_dir }}/manifests/cluster-network-03-config.yml"
-  #     content: |
-  #       apiVersion: operator.openshift.io/v1
-  #       kind: Network
-  #       metadata:
-  #         name: cluster
-  #       spec:
-  #         defaultNetwork:
-  #           ovnKubernetesConfig:
-  #             hybridOverlayConfig:
-  #               hybridClusterNetwork:
-  #               - cidr: 10.132.0.0/14
-  #                 hostPrefix: 23
+  - name: Enable Hybride Overlay
+    copy:
+      dest: "{{ openshift_install_dir }}/manifests/cluster-network-03-config.yml"
+      content: |
+        apiVersion: operator.openshift.io/v1
+        kind: Network
+        metadata:
+          name: cluster
+        spec:
+          defaultNetwork:
+            ovnKubernetesConfig:
+              hybridOverlayConfig:
+                hybridClusterNetwork:
+                - cidr: 10.132.0.0/14
+                  hostPrefix: 23
 
   - name: Create ignition files
     command: "{{ openshift_install_command }} --dir={{ openshift_install_dir }} create ignition-configs"
 # End block with local execution
-
-- name: Set fact
-  set_fact:
-    override_node_ip: |
-      #!/bin/bash
-      set -eux
-
-      if [ ! -d "/etc/systemd/system/kubelet.service.d/" ] ; then
-        mkdir -p /etc/systemd/system/kubelet.service.d/;
-      fi
-
-      KUBELET_NODE_IP=$(awk '/32 host/ { print f } {f=$2}' <<< "$(</proc/net/fib_trie)" | sort -u | grep '192.168.35' | head -1)
-
-      if [ -z "$KUBELET_NODE_IP" ] ; then
-        echo "Can not determine node ip!"
-        exit 1
-      fi
-
-      cat - > /etc/systemd/system/kubelet.service.d/98-nodenet-override.conf <<EOF
-      [Service]
-      Environment="KUBELET_NODE_IP=$KUBELET_NODE_IP" "KUBELET_NODE_IPS=$KUBELET_NODE_IP"
-      EOF
 
 - name: Create RHCOS Config
   copy:
@@ -88,27 +66,6 @@
             contents:
               source: data:,{{ inventory_hostname_short }}-private.{{ base_domain }}
             mode: 420
-          - path: /usr/local/bin/override-node-ip.sh
-            contents:
-              source: data:text/plain;charset=utf-8;base64,{{ override_node_ip | b64encode }}
-            mode: 0755
-            overwrite: true
-      systemd:
-        units:
-        - contents: |
-            [Unit]
-            Description=Override node IP detection
-            Wants=network-online.target
-            Before=kubelet.service
-            After=network-online.target
-            [Service]
-            Type=oneshot
-            ExecStart=/usr/local/bin/override-node-ip.sh
-            ExecStart=systemctl daemon-reload
-            [Install]
-            WantedBy=multi-user.target
-          enabled: true
-          name: nodenet-override.service
 
 - name: Copy ignition
   copy:
