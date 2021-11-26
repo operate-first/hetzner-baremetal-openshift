@@ -19,8 +19,8 @@ parent={{ network_primary_interface }}
 address1={{ internal_ip }}/24
 dns-search=
 method=manual
-route1=192.168.0.0/16,192.168.35.1
-
+gateway=192.168.35.2
+dns={{ network_dns }}
 
 [ipv6]
 addr-gen-mode=stable-privacy
