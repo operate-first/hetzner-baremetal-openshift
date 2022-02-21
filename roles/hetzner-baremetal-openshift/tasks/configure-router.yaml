@@ -1,0 +1,54 @@
+---
+- name: Fail - not done yet!
+  fail:
+
+# ToDo: Migrate to ansible
+# subscription-manager register
+
+# subscription-manager attach --pool=...
+
+# subscription-manager repos --disable=*
+
+# subscription-manager repos \
+#     --enable=rhel-8-for-x86_64-baseos-rpms \
+#     --enable=rhel-8-for-x86_64-appstream-rpms \
+#     --enable=rhel-8-for-x86_64-highavailability-rpms \
+#     --enable=ansible-2.9-for-rhel-8-x86_64-rpms
+
+
+# Create user operate-first
+# Add ssh key
+# Close ssh root access
+# enable rh insights
+
+# dnf update...
+
+
+
+
+# sudo sysctl -w net.ipv4.ip_forward=1
+# sudo vi /etc/sysctl.d/99-sysctl.conf # put the 'net' in this file
+
+# firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o enp2s0 -j MASQUERADE
+# firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i enp2s0.4035 -o enp2s0 -j ACCEPT
+# firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i enp2s0 -o enp2s0.4035 -m state --state RELATED,ESTABLISHED -j ACCEPT
+# firewall-cmd --permanent --add-masquerade
+# firewall-cmd --reload
+
+
+# [operate-first@morty-router-a ~]$ sudo setsebool -P haproxy_connect_any 1
+
+
+# firewall-cmd --zone=public --permanent --add-port=80/tcp
+# firewall-cmd --zone=public --permanent --add-port=443/tcp
+# firewall-cmd --zone=public --permanent --add-port=6443/tcp
+# firewall-cmd --reload
+
+# firewall-cmd --zone=internal --permanent --change-interface=enp2s0.4035
+# firewall-cmd --zone=internal --permanent --add-port=6443/tcp
+# firewall-cmd --zone=internal --permanent --add-port=22623/tcp
+# firewall-cmd --zone=internal --permanent --add-port=80/tcp
+# firewall-cmd --zone=internal --permanent --add-port=443/tcp
+# firewall-cmd --zone=internal --permanent --add-port=6443/tcp
+
+# firewall-cmd --reload

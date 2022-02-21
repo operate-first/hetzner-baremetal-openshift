@@ -1,0 +1,91 @@
+---
+- include_tasks: boot-rescue.yaml
+  when: ansible_hostname != 'rescue'
+
+- name: Copy autosetup configuration file
+  copy:
+    content: |
+      DRIVE1 /dev/{{ hetzner_disk1 }}
+      DRIVE2 /dev/{{ hetzner_disk2 }}
+      SWRAID 1
+      SWRAIDLEVEL 1
+      BOOTLOADER grub
+      HOSTNAME {{ inventory_hostname }}
+      PART /boot ext3 512M
+      PART lvm vg0 all
+
+      LV vg0 root / ext4 50G
+      LV vg0 swap swap swap 8G
+      LV vg0 home   /home   ext4      40G
+      LV vg0 var    /var ext4 50G
+
+      IMAGE {{ hetzner_image }}
+
+    dest: /root/autosetup
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Run installimage
+  command: "/root/.oldroot/nfs/install/installimage -a -c /root/autosetup"
+  environment:
+    TERM: "vt100"
+  ignore_errors: true
+  register: result
+
+- debug:
+    var: result
+    verbosity: 1
+
+- name: Check stderr from installimage
+  fail:
+    msg: "Something want wrong at installimage: {{ result.stderr_lines | join('\n') }}"
+  when:
+    - result.stderr_lines | length > 0
+    - hetzner_image_ignore_errors == false
+
+- name: Check stdout from installimage
+  fail:
+    msg: "Something want wrong at installimage: {{ result.stdout_lines | join('\n') }}"
+  when:
+    - result.stdout is search('An error occured while installing the new system!')
+    - hetzner_image_ignore_errors == false
+
+- name: Reboot server
+  shell: sleep 2 && shutdown -r now
+  async: 1
+  poll: 0
+  ignore_errors: yes
+
+- name: Remove server from local known_hosts file
+  local_action: command  /usr/bin/ssh-keygen -R {{ inventory_hostname }}
+  ignore_errors: yes
+
+- name: Wait 300 seconds for port 22 to become open
+  wait_for:
+    port: 22
+    host: '{{ inventory_hostname }}'
+    delay: 10
+    timeout: 300
+  connection: local
+
+- name: Check ansible_python_interpreter
+  ping:
+  register: rc
+  ignore_errors: true
+
+- name: Set ansible_python_interpreter to /usr/libexec/platform-python (RHEL 8)
+  set_fact:
+    ansible_python_interpreter: /usr/libexec/platform-python
+  when: rc.failed == true
+
+- name: Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication yes'
+    line: 'PasswordAuthentication no'
+
+- name: Restart sshd
+  systemd:
+    name: sshd.service
+    state: restarted

@@ -1,77 +1,4 @@
 ---
-- hcloud_ssh_key:
-    api_token: "{{ hcloud_api_token }}"
-    name: operate-first
-    public_key: "{{ ssh_public_key }}"
-    state: present
-
-# - hetzner.hcloud.hcloud_floating_ip:
-#     api_token: "{{ hcloud_api_token }}"
-#     name: "{{cluster_name }}-public_ip"
-#     home_location: fsn1
-#     type: ipv4
-#     state: present
-#   register: public_ip
-
-- name: Create network
-  hetzner.hcloud.hcloud_network:
-    api_token: "{{ hcloud_api_token }}"
-    name: "{{ cluster_name }}"
-    ip_range: 192.168.0.0/16
-    state: present
-
-- name: Attach vSwitch to network
-  hetzner.hcloud.hcloud_subnetwork:
-    api_token: "{{ hcloud_api_token }}"
-    network: "{{ cluster_name }}"
-    ip_range: "{{ privat_subnet }}"
-    network_zone: eu-central
-    type: vswitch
-    vswitch_id: "{{ network_vswitch_id }}"
-    state: present
-
-- name: Create subnet
-  hetzner.hcloud.hcloud_subnetwork:
-    api_token: "{{ hcloud_api_token }}"
-    network: "{{ cluster_name }}"
-    ip_range: "192.168.34.0/24"
-    network_zone: eu-central
-    type: cloud
-    vswitch_id: "{{ network_vswitch_id }}"
-    state: present
-
-- name: Create a firewall with rules
-  hetzner.hcloud.hcloud_firewall:
-    api_token: "{{ hcloud_api_token }}"
-    name: "{{cluster_name }}-lb-private"
-    rules:
-      - direction: in
-        protocol: tcp
-        port: "22"
-        source_ips:
-          - 0.0.0.0/0
-    state: present
-  register: firewall_output
-
-- name: Setup hcloud_server
-  hetzner.hcloud.hcloud_server:
-    api_token: "{{ hcloud_api_token }}"
-    name: "{{cluster_name }}-lb-private"
-    server_type: cx11
-    image: centos-8
-    location: fsn1
-    state: present
-    firewalls: "{{ firewall_output.hcloud_firewall.id }}"
-    ssh_keys:
-      - operate-first
-  register: output
-
-- name: Attach network to server
-  hetzner.hcloud.hcloud_server_network:
-    api_token: "{{ hcloud_api_token }}"
-    network: "{{ cluster_name }}"
-    server: "{{cluster_name }}-lb-private"
-    state: present
 
 - name: Create DNS record at GCP
   gcp_dns_resource_record_set:
@@ -82,53 +9,12 @@
     type: A
     ttl: 120
     target:
-      - "192.168.34.1"
+      - "{{ internal_ip }}"
     project: "{{ gcp_project }}"
     auth_kind: serviceaccount
     service_account_file: "{{ gcp_serviceaccount_file }}"
     state: present
 
-- name: Create DNS record at GCP
-  gcp_dns_resource_record_set:
-    name: "{{cluster_name }}-lb-private.{{ base_domain }}."
-    managed_zone:
-      name: "{{ gcp_managed_zone_name }}"
-      dnsName: "{{ gcp_managed_zone_domain }}"
-    type: A
-    ttl: 120
-    target:
-      - "{{output.hcloud_server.ipv4_address}}"
-    project: "{{ gcp_project }}"
-    auth_kind: serviceaccount
-    service_account_file: "{{ gcp_serviceaccount_file }}"
-    state: present
-
-- name: Create lb-public
-  hetzner.hcloud.hcloud_load_balancer:
-    api_token: "{{ hcloud_api_token }}"
-    name: "{{cluster_name }}-lb-public"
-    load_balancer_type: lb11
-    location: fsn1
-    state: present
-  register: lb_public
-
-- hetzner.hcloud.hcloud_load_balancer_target:
-    api_token: "{{ hcloud_api_token }}"
-    load_balancer: "{{cluster_name }}-lb-public"
-    type: ip
-    ip: "{{ item }}"
-  with_items: "{{ groups['nodes'] | map ('extract', hostvars, 'hetzner_ip') | list }}"
-
-- hetzner.hcloud.hcloud_load_balancer_service:
-    api_token: "{{ hcloud_api_token }}"
-    load_balancer: "{{cluster_name }}-lb-public"
-    listen_port: "{{ item }}"
-    destination_port: "{{ item }}"
-    protocol: tcp
-  with_items:
-    - 80
-    - 443
-    - 6443
 
 - name: Create DNS record at GCP
   gcp_dns_resource_record_set:
@@ -139,7 +25,7 @@
     type: A
     ttl: 120
     target:
-      - "{{lb_public.hcloud_load_balancer.ipv4_address}}"
+      - "{{ hetzner_ip }}"
     project: "{{ gcp_project }}"
     auth_kind: serviceaccount
     service_account_file: "{{ gcp_serviceaccount_file }}"
@@ -148,17 +34,3 @@
     - api
     - "*.apps"
 
-- name: Wait 300 seconds for port 22 to become open
-  wait_for:
-    port: 22
-    host: "{{ output.hcloud_server.ipv4_address }}"
-    delay: 1
-    timeout: 300
-  connection: local
-
-- name: Create temp. inventory
-  add_host:
-    hostname: lb
-    ansible_user: root
-    ansible_host: "{{ output.hcloud_server.ipv4_address }}"
-    groups: hetzner

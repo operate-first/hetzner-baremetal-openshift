@@ -1,0 +1,148 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Start hcloud_instance
+  hosts: routers
+  gather_facts: yes
+  tasks:
+    - name: Copy nmconnect
+      copy:
+        dest: "/etc/NetworkManager/system-connections/{{ network_primary_interface }}.{{ network_vlanid }}.nmconnection"
+        owner: root
+        group: root
+        mode: 0600
+        content: |
+          [connection]
+          id=vlan{{ network_vlanid }}
+          type=vlan
+          interface-name={{ network_primary_interface }}.{{ network_vlanid }}
+          permissions=
+          zone=internal
+
+          [ethernet]
+          mac-address-blacklist=
+          mtu=1400
+
+          [vlan]
+          egress-priority-map=
+          flags=1
+          id={{ network_vlanid }}
+          ingress-priority-map=
+          parent={{ network_primary_interface }}
+
+          [ipv4]
+          address1={{ internal_ip }}/24
+          dns-search=
+          method=manual
+
+
+          [ipv6]
+          addr-gen-mode=stable-privacy
+          dns-search=
+          method=disabled
+
+          [proxy]
+
+
+    # - include_role:
+    #     name: hetzner-baremetal-openshift
+    #     tasks_from: create-dns-lb.yaml
+
+    - name: install haproxy
+      package:
+        name:
+          - haproxy
+          # To get stats:
+          # echo "show stat" | nc -U /var/lib/haproxy/stats | cut -d "," -f 1,2,18,57| column -s, -t;
+          - nc
+        state: present
+
+    - name: Configure haproxy
+      copy:
+        backup: yes
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              log         127.0.0.1 local2
+
+              chroot      /var/lib/haproxy
+              pidfile     /var/run/haproxy.pid
+              maxconn     4000
+              user        haproxy
+              group       haproxy
+
+              # turn on stats unix socket
+              stats socket /var/lib/haproxy/stats
+
+
+          #---------------------------------------------------------------------
+          # common defaults that all the 'listen' and 'backend' sections will
+          # use if not designated in their block
+          #---------------------------------------------------------------------
+
+          defaults
+              mode                    http
+              log                     global
+              #option                  httplog
+              option                  dontlognull
+              #option http-server-close
+              #option forwardfor       except 127.0.0.0/8
+              option                  redispatch
+              retries                 3
+              timeout http-request    10s
+              timeout queue           1m
+              timeout connect         10s
+              timeout client          1m
+              timeout server          1m
+              timeout http-keep-alive 10s
+              timeout check           10s
+              maxconn                 3000
+
+          listen machine-config-server
+              bind {{ internal_ip }}:22623
+              mode tcp
+
+              {% for host in groups['masters'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:22623 check
+              {% endfor -%}
+
+              {% for host in groups['bootstrap'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:22623 check
+              {% endfor -%}
+          listen api
+              bind {{ internal_ip }}:6443
+              bind {{ hetzner_ip }}:6443
+              mode tcp
+
+              {% for host in groups['masters'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:6443 check
+              {% endfor -%}
+
+              {% for host in groups['bootstrap'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:6443 check
+              {% endfor -%}
+
+          listen ingress-https
+              bind {{ internal_ip }}:443
+              bind {{ hetzner_ip }}:443
+              mode tcp
+
+              {% for host in groups['nodes'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:443 check
+              {% endfor -%}
+
+          listen ingress-http
+              bind {{ internal_ip }}:80
+              bind {{ hetzner_ip }}:80
+              mode tcp
+
+              {% for host in groups['nodes'] -%}
+              server {{ host }} {{ hostvars[host].internal_ip }}:80 check
+              {% endfor -%}
+
+
+    - name: enable haproxy
+      systemd:
+        name: haproxy
+        enabled: yes
+        masked: no
+        state: started
