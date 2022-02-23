@@ -2,15 +2,14 @@
 
 ## Network Overview
 
-![Network overview](docs/images/network-overview-v3.png)
+![Network overview](docs/images/network-overview-v4.png)
 
 
 ## Cluster design
 
-* 3 Master
-* 3 Worker
+Deppends on the cluster.
 
-One of the worker is used to be the bootstrap during installation.
+But for all: One of the worker is used to be the bootstrap during installation.
 
 ## Installation
 
@@ -31,7 +30,14 @@ cp -v hosts.yaml.example hosts.yaml
 $EDITOR hosts.yaml
 ```
 
-### DNS & load balancer preperations
+### DNS & load balancer/router preperations
+
+  * Order a BareMetal Server as Load Balancer & Router.
+      * [Prepare RHEL 8 Image](https://keithtenzer.com/cloud/how%20-to-create-a-rhel-8-image-for-hetzner-root-servers/)
+      * Install Server with RHEL 8
+
+  * Configure Network (public & private)
+      * Coonfigure server as router between priavet and public (act as default gateway for alle nodes.)
 
   * Configure load balancer:
       * Public for api & ingress
@@ -42,13 +48,6 @@ $EDITOR hosts.yaml
       * `api-int.<cluster_name>.emea.operate-first.cloud`
       * `*.apps.<cluster_name>.emea.operate-first.cloud`
 
-All steps are done with one single playbook:
-
-**Important: this step is not idempotent** (Issue #5)
-
-```bash
-./configure-lb-and-dns.yaml
-```
 
 ### Hardware preperations
 
@@ -241,3 +240,4 @@ Change `mastersSchedulable: true` to `mastersSchedulable: false`
 ### OpenShift reinstallation
 
 Its recommended to wipe the disk with `wipe-server.yaml` playbook bevor reinstallation.
+
