@@ -4,10 +4,9 @@
   hosts: all
   connection: local
   gather_facts: no
-  serial: 1
   tasks:
     - debug:
-        msg: "{{ inventory_hostname_short }}-priv.{{ base_domain }}. => {{ hetzner_ip }} "
+        msg: "{{ inventory_hostname_short }}-priv.{{ base_domain }}. => {{ hetzner_ip | default(hetzner_ipv6) }} "
 
     - name: Create private DNS record at GCP
       gcp_dns_resource_record_set:
@@ -24,7 +23,7 @@
         service_account_file: "{{ gcp_serviceaccount_file }}"
         state: present
 
-    - name: Create public DNS record at GCP
+    - name: Create public IPv4 DNS record at GCP
       gcp_dns_resource_record_set:
         name: "{{ inventory_hostname }}."
         managed_zone:
@@ -38,3 +37,21 @@
         auth_kind: serviceaccount
         service_account_file: "{{ gcp_serviceaccount_file }}"
         state: present
+      when: hetzner_ip is defined
+
+    - name: Create public IPv6 DNS record at GCP
+      become: false
+      gcp_dns_resource_record_set:
+        name: "{{ inventory_hostname }}."
+        managed_zone:
+          name: "{{ gcp_managed_zone_name }}"
+          dnsName: "{{ gcp_managed_zone_domain }}"
+        type: AAAA
+        ttl: 300
+        target:
+          - "{{ hetzner_ipv6 }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_serviceaccount_file }}"
+        state: present
+      when: hetzner_ipv6 is defined
