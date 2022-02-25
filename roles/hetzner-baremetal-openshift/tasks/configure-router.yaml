@@ -23,9 +23,6 @@
 
 # dnf update...
 
-
-
-
 # sudo sysctl -w net.ipv4.ip_forward=1
 # sudo vi /etc/sysctl.d/99-sysctl.conf # put the 'net' in this file
 

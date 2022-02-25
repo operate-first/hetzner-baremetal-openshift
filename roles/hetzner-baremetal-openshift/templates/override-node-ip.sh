@@ -16,4 +16,3 @@ cat - > /etc/systemd/system/kubelet.service.d/98-nodenet-override.conf <<EOF
 [Service]
 Environment="KUBELET_NODE_IP=$KUBELET_NODE_IP" "KUBELET_NODE_IPS=$KUBELET_NODE_IP"
 EOF
-

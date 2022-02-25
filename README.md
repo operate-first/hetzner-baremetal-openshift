@@ -240,4 +240,3 @@ Change `mastersSchedulable: true` to `mastersSchedulable: false`
 ### OpenShift reinstallation
 
 Its recommended to wipe the disk with `wipe-server.yaml` playbook bevor reinstallation.
-
