@@ -26,32 +26,43 @@
             dst_port: '22'
             protocol: tcp
             action: accept
-          - name: Allow api and ingress
+          - name: Allow private network
             ip_version: ipv4
+            src_ip: "192.168.0.0/16"
             protocol: tcp
-            # Maximum 3 destination ports allowed.
-            dst_port: '6443,443,80'
-            action: accept
-          - name: Allow MachineConfig from {{ cluster_name }}-lb-private
-            ip_version: ipv4
-            protocol: tcp
-            src_ip: "{{ output.hcloud_server_info[0].ipv4_address }}"
-            dst_port: '22623'
             action: accept
 
-    - name: Add nodes to rules_input
+
+    - name: Allow API traffic to masters
       set_fact:
         rules_input: "{{ rules_input }} +
           [
             {
-              'name': 'Allow traffic from {{item}}',
+              'name': 'Allow API traffic',
               'ip_version': 'ipv4',
-              'src_ip': '{{ hostvars[item].hetzner_ip }}',
+              'dst_port': '6443',
               'action': 'accept'
             }
           ]"
-      with_items: "{{ groups['nodes'] + groups['bootstrap'] }}"
-      when: item != inventory_hostname
+      when: "'masters' not in group_names or 'bootstrap' not in group_names"
+      # with_items: "{{ groups['masters'] + groups['bootstrap'] }}"
+      # when: item != inventory_hostname
+
+
+    - name: Allow ingress traffic to workers
+      set_fact:
+        rules_input: "{{ rules_input }} +
+          [
+            {
+              'name': 'Allow ingress traffic',
+              'ip_version': 'ipv4',
+              'dst_port': '443,80',
+              'action': 'accept'
+            }
+          ]"
+      when: "'workers' not in group_names"
+      # with_items: "{{ groups['workers'] }}"
+      # when: item != inventory_hostname
 
     # - debug: var=rules_input
 

@@ -2,15 +2,14 @@
 
 ## Network Overview
 
-![Network overview](docs/images/network-overview-v3.png)
+![Network overview](docs/images/network-overview-v4.png)
 
 
 ## Cluster design
 
-* 3 Master
-* 3 Worker
+Deppends on the cluster.
 
-One of the worker is used to be the bootstrap during installation.
+But for all: One of the worker is used to be the bootstrap during installation.
 
 ## Installation
 
@@ -31,7 +30,14 @@ cp -v hosts.yaml.example hosts.yaml
 $EDITOR hosts.yaml
 ```
 
-### DNS & load balancer preperations
+### DNS & load balancer/router preperations
+
+  * Order a BareMetal Server as Load Balancer & Router.
+      * [Prepare RHEL 8 Image](https://keithtenzer.com/cloud/how%20-to-create-a-rhel-8-image-for-hetzner-root-servers/)
+      * Install Server with RHEL 8
+
+  * Configure Network (public & private)
+      * Coonfigure server as router between priavet and public (act as default gateway for alle nodes.)
 
   * Configure load balancer:
       * Public for api & ingress
@@ -42,13 +48,6 @@ $EDITOR hosts.yaml
       * `api-int.<cluster_name>.emea.operate-first.cloud`
       * `*.apps.<cluster_name>.emea.operate-first.cloud`
 
-All steps are done with one single playbook:
-
-**Important: this step is not idempotent** (Issue #5)
-
-```bash
-./configure-lb-and-dns.yaml
-```
 
 ### Hardware preperations
 
@@ -57,17 +56,24 @@ All steps are done with one single playbook:
   * Configure DNS ( A & PTR ) for BareMetal Server
       `<hostname>.emea.operate-first.cloud`
 
+  * Create private vSwitch and add ID to `hosts.yaml`
+
+  * Attach server to private vSwitch
+
   * [Install Centos 8 to determine the network interface name](docs/install-centos-8.md)
 
+  * Check network interface names on centos 8: `ansible -m shell -a "ip link | grep enp | cut -f2 -d':'" all`
+
   * Add server to `hosts.yaml`
+
+  * Wipe all servers after Centos 8 installaion: `./wipe.yaml`
+    Please run `./wipe.yaml` again if some failed agure.
 
   * Run a RH CoreOS Test installation with ssh-only ignition
     ```bash
     ./reset-server.yaml [-l hostname]
     # SSh into rescue system and run coreos-install
     #  command printed out at the end ot the playbook.
-
-
     ```
 
     Check installation, server boot? Can connect via SSH?

@@ -10,7 +10,7 @@
 
 FROM registry.fedoraproject.org/fedora-toolbox
 
-ARG OPENSHIFT_VERSION=4.7.12
+ARG OPENSHIFT_VERSION=4.9.5
 
 RUN \
     dnf install -y ansible pip python3-google-auth.noarch vim && \

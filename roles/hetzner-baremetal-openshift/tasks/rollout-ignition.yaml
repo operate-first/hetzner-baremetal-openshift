@@ -1,0 +1,32 @@
+---
+- name: Create RHCOS Config
+  copy:
+    dest: /root/config.rcc
+    content: |
+      variant: rhcos
+      version: 0.1.0
+      ignition:
+        config:
+          merge:
+            - local: {{ ignition_name }}
+      {% if inventory_hostname in groups['masters'] %}
+      boot_device:
+        mirror:
+          devices:
+            - /dev/{{ hetzner_disk1 }}
+            - /dev/{{ hetzner_disk2 }}
+      {% endif %}
+      storage:
+        files:
+          - path: /etc/hostname
+            contents:
+              source: data:,{{ inventory_hostname_short }}-private.{{ base_domain }}
+            mode: 420
+
+- name: Copy ignition
+  copy:
+    src: "{{ openshift_install_dir }}/{{ ignition_name }}"
+    dest: "/root/{{ ignition_name }}"
+
+- name: Mangle ignition config
+  command: "{{ butane }} --files-dir . config.rcc --output config.ignition"

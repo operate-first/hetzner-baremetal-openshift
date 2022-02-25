@@ -40,12 +40,12 @@ workers:
     ignition_name: worker.ign
   hosts:
     host05.example.com:
-      hetzner_ip: 138.201.33.199
-      network_gateway: 138.201.33.193
+      hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
 
     host06.example.com:
-      hetzner_ip: 138.201.33.87
-      network_gateway: 138.201.33.65
+      hetzner_ipv6: 2a01:4f8:171:3647::2
+      hetzner_server_number: xxxxxx
 
 masters:
   vars:
@@ -58,16 +58,17 @@ masters:
 
   hosts:
     host01.example.com:
-      hetzner_ip: 1.1.1.35
-      network_gateway: 1.1.1.1
+      hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
+
     host02.example.com:
-      hetzner_ip: 2.2.2.2.217
-      network_gateway: 2.2.2.2.193
+      hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
+
     host03.example.com:
       network_primary_interface: enp3s0
-      hetzner_ip: 3.3.3.3.105
-      network_gateway: 3.3.3.3.65
-
+      hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
 
 bootstrap:
   vars:
@@ -78,5 +79,37 @@ bootstrap:
     ignition_name: bootstrap.ign
   hosts:
     host04.example.com:
-      hetzner_ip: 4.4.4.4.215
-      network_gateway: 4.4.4.4.193
+      hetzner_server_number: xxxxxx
+      hetzner_ipv6: 2a01:4f8:171:3646::2
+
+
+routers:
+  vars:
+    hetzner_disk1: sda
+    hetzner_disk2: sdb
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+    network_mask: 26
+    ansible_user: operate-first
+    ansible_become: true
+  hosts:
+    morty-router-a.routers:
+  vars:
+    hetzner_disk1: sda
+    hetzner_disk2: sdb
+    network_dns: "213.133.98.98;213.133.99.99;213.133.100.100"
+    network_mask: 26
+    ansible_user: operate-first
+    ansible_become: true
+  hosts:
+    morty-router-a.example.com:
+      hetzner_server_number: xxxxxx
+      ansible_hostname: 46.4.65.162
+      internal_ip: 192.168.35.2
+      hetzner_ip: 46.4.65.162
+      network_gateway: 46.4.65.129
+      network_primary_interface: enp2s0:
+      ansible_hostname: 46.4.65.162
+      internal_ip: 192.168.35.2
+      hetzner_ip: 46.4.65.162
+      network_gateway: 46.4.65.129
+      network_primary_interface: enp2s0

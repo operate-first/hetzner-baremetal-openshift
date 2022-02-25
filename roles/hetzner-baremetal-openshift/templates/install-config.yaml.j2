@@ -14,9 +14,11 @@ networking:
   clusterNetwork:
   - cidr: 10.128.0.0/14
     hostPrefix: 23
-  networkType: OVNKubernetes
+  networkType: OpenShiftSDN
   serviceNetwork:
   - 172.30.0.0/16
+  machineNetwork:
+  - cidr: {{ privat_subnet }}
 platform:
   none: {}
 fips: false

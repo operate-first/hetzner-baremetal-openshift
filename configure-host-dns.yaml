@@ -1,0 +1,57 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Start hcloud_instance
+  hosts: all
+  connection: local
+  gather_facts: no
+  tasks:
+    - debug:
+        msg: "{{ inventory_hostname_short }}-priv.{{ base_domain }}. => {{ hetzner_ip | default(hetzner_ipv6) }} "
+
+    - name: Create private DNS record at GCP
+      gcp_dns_resource_record_set:
+        name: "{{ inventory_hostname_short }}-private.{{ base_domain }}."
+        managed_zone:
+          name: "{{ gcp_managed_zone_name }}"
+          dnsName: "{{ gcp_managed_zone_domain }}"
+        type: A
+        ttl: 300
+        target:
+          - "{{ internal_ip }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_serviceaccount_file }}"
+        state: present
+
+    - name: Create public IPv4 DNS record at GCP
+      gcp_dns_resource_record_set:
+        name: "{{ inventory_hostname }}."
+        managed_zone:
+          name: "{{ gcp_managed_zone_name }}"
+          dnsName: "{{ gcp_managed_zone_domain }}"
+        type: A
+        ttl: 300
+        target:
+          - "{{ hetzner_ip }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_serviceaccount_file }}"
+        state: present
+      when: hetzner_ip is defined
+
+    - name: Create public IPv6 DNS record at GCP
+      become: false
+      gcp_dns_resource_record_set:
+        name: "{{ inventory_hostname }}."
+        managed_zone:
+          name: "{{ gcp_managed_zone_name }}"
+          dnsName: "{{ gcp_managed_zone_domain }}"
+        type: AAAA
+        ttl: 300
+        target:
+          - "{{ hetzner_ipv6 }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        service_account_file: "{{ gcp_serviceaccount_file }}"
+        state: present
+      when: hetzner_ipv6 is defined

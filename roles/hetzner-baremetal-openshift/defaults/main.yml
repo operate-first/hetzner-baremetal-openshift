@@ -6,10 +6,10 @@ hetzner_image: "/root/.oldroot/nfs/install/../images/CentOS-76-64-minimal.tar.gz
 hetzner_image_ignore_errors: false
 
 coreos_install_url: "https://mirror.openshift.com/pub/openshift-v4/clients/coreos-installer/v0.8.0-3/coreos-installer"
-coreos_image_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz"
-coreos_image: /root/rhcos-4.7.7-x86_64-metal.x86_64.raw.gz
+coreos_image_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.9/4.9.0/rhcos-4.9.0-x86_64-metal.x86_64.raw.gz"
+coreos_image: /root/rhcos-4.9.0-x86_64-metal.x86_64.raw.gz
 
-butane_url: "https://mirror.openshift.com/pub/openshift-v4/clients/butane/v0.12.1-1/butane-amd64"
+butane_url: "https://mirror.openshift.com/pub/openshift-v4/clients/butane/v0.13.1-1/butane-amd64"
 butane: /root/butane
 
 openshift_install_dir: "{{ playbook_dir }}/{{ cluster_name }}/"

@@ -1,0 +1,30 @@
+[connection]
+id=vlan{{ network_vlanid }}
+type=vlan
+interface-name={{ network_primary_interface }}.{{ network_vlanid }}
+permissions=
+
+[ethernet]
+mac-address-blacklist=
+mtu=1400
+
+[vlan]
+egress-priority-map=
+flags=1
+id={{ network_vlanid }}
+ingress-priority-map=
+parent={{ network_primary_interface }}
+
+[ipv4]
+address1={{ internal_ip }}/24
+dns-search=
+method=manual
+gateway=192.168.35.2
+dns={{ network_dns }}
+
+[ipv6]
+addr-gen-mode=stable-privacy
+dns-search=
+method=disabled
+
+[proxy]
