@@ -11,10 +11,10 @@ mac-address-blacklist=
 [ipv4]
 dns-search=
 method=disabled
-# address1={{ hetzner_ip }}/{{ network_mask }}
+# address1={{ hetzner_ip | default('') }}/{{ network_mask }}
 # method=manual
 # never-default=true
-# gateway={{ network_gateway }}
+# gateway={{ network_gateway | default('') }}
 # dns={{ network_dns }}
 
 [ipv6]
