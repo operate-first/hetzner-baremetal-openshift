@@ -12,7 +12,7 @@
 
 - name: Check rescue mode
   uri:
-    url: "https://robot-ws.your-server.de/boot/{{ hetzner_ip }}/rescue"
+    url: "https://robot-ws.your-server.de/boot/{{ hetzner_server_number }}/rescue"
     method: GET
     user: "{{ hetzner_webservice_username }}"
     password: "{{ hetzner_webservice_password }}"
@@ -24,7 +24,7 @@
 - name: Activate rescue mode
   when: rescue.json.rescue.active == false
   uri:
-    url: "https://robot-ws.your-server.de/boot/{{ hetzner_ip }}/rescue"
+    url: "https://robot-ws.your-server.de/boot/{{ hetzner_server_number }}/rescue"
     method: POST
     user: "{{ hetzner_webservice_username }}"
     password: "{{ hetzner_webservice_password }}"
@@ -40,7 +40,7 @@
 
 - name: Execute hardware reset
   uri:
-    url: "https://robot-ws.your-server.de/reset/{{ hetzner_ip }}"
+    url: "https://robot-ws.your-server.de/reset/{{ hetzner_server_number }}"
     method: POST
     user: "{{ hetzner_webservice_username }}"
     password: "{{ hetzner_webservice_password }}"

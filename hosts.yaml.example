@@ -41,10 +41,11 @@ workers:
   hosts:
     host05.example.com:
       hetzner_ipv6: 2a01:4f8:171:3646::2
-
+      hetzner_server_number: xxxxxx
 
     host06.example.com:
       hetzner_ipv6: 2a01:4f8:171:3647::2
+      hetzner_server_number: xxxxxx
 
 masters:
   vars:
@@ -58,14 +59,16 @@ masters:
   hosts:
     host01.example.com:
       hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
 
     host02.example.com:
       hetzner_ipv6: 2a01:4f8:171:3646::2
+      hetzner_server_number: xxxxxx
 
     host03.example.com:
       network_primary_interface: enp3s0
       hetzner_ipv6: 2a01:4f8:171:3646::2
-
+      hetzner_server_number: xxxxxx
 
 bootstrap:
   vars:
@@ -76,6 +79,7 @@ bootstrap:
     ignition_name: bootstrap.ign
   hosts:
     host04.example.com:
+      hetzner_server_number: xxxxxx
       hetzner_ipv6: 2a01:4f8:171:3646::2
 
 
@@ -98,6 +102,7 @@ routers:
     ansible_become: true
   hosts:
     morty-router-a.example.com:
+      hetzner_server_number: xxxxxx
       ansible_hostname: 46.4.65.162
       internal_ip: 192.168.35.2
       hetzner_ip: 46.4.65.162
